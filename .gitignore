@@ -1,5 +1,6 @@
 .*
 !.github/
+!.vscode/
 !.gitignore
 *__pycache__*
 !.python-version

@@ -1,0 +1,21 @@
+{
+    // pylance
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.analysis.typeEvaluation.strictDictionaryInference": true,
+    "python.analysis.typeEvaluation.strictListInference": true,
+    "python.analysis.typeEvaluation.strictSetInference": true,
+    "python.terminal.activateEnvInCurrentTerminal": true,
+    "python.analysis.typeEvaluation.deprecateTypingAliases": false,
+    
+    // editor
+    "ruff.importStrategy": "useBundled",
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "always",
+        "source.fixAll": "always",
+        "source.unusedImports": "explicit"
+    },
+}
