@@ -2,3 +2,12 @@
 python = ">=3.9,<3.14"
 requests = ">=2.25.0"
 edgegrid-python = "*"
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --tb=short"
+testpaths = ["tests"]
+pythonpath = "." 
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
