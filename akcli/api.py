@@ -159,7 +159,7 @@ class AkamaiAPI:
         kwargs["timeout"] = self._timeout
         kwargs["verify"] = self._validate_certs
 
-        # Initialize res to None for preventing `UnboundLocalError` in some hipothetical scenarios
+        # Initialize `res` to None for preventing `UnboundLocalError` in some hypothetical scenarios
         res = None
 
         try:
@@ -193,7 +193,7 @@ class AkamaiAPI:
                 else:
                     raise
 
-            # In case res is None, re-raise the exception
+            # In case `res` is None, re-raise the exception
             raise
 
         except requests.exceptions.Timeout:
