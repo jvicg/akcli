@@ -8,6 +8,7 @@ IFS=$'\n\t'
 SUCCESS_EXIT=0
 ERR_EXIT=1
 
+PROG_NAME=$(basename "$0")
 MODELS_DIR="${PWD}/akcli/models/"
 OUTPUT_MODEL_TYPE="pydantic_v2.BaseModel"
 BASE_CLASS=".base_response.CamelCaseModel"
@@ -15,9 +16,8 @@ PYTHON_VERSION="3.9"
 
 
 _show_help() {
-    prog_name=$(basename "$0")
     cat << EOF
-Usage: ${prog_name} -i INPUT_FILE -o OUTPUT_FILE [OPTIONS]
+Usage: ${PROG_NAME} -i INPUT_FILE -o OUTPUT_FILE [OPTIONS]
 
 Generate Pydantic models from JSON files.
 
@@ -26,12 +26,7 @@ Options:
     -o, --output        Output Python file name (required)
     -H, --file-headers  Additional text to prepend to file headers (optional)
     -h, --help          Show this help message
-
-Example:
-    ${prog_name} -i example.json -o example_model.py
-    ${prog_name} -i example.json -o example_model.py -H "Custom header text"
 EOF
-    exit $SUCCESS_EXIT
 }
 
 _get_file_headers() {
@@ -53,7 +48,7 @@ EOF
 
 _validate_args() {
     local input_file="$1"
-    local output_file="$2Set name of models defined inline from the parent model"
+    local output_file="$2"
 
     if [ -z "${input_file}" ] || [ -z "${output_file}" ]; then
         echo "error: Both --input and --output are required."
@@ -91,6 +86,7 @@ main() {
                 ;;
             -h|--help)
                 _show_help
+                exit $SUCCESS_EXIT
                 ;;
             *)
                 echo "error: Unknown option: $1"
