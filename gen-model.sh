@@ -112,6 +112,7 @@ main() {
         --custom-file-header "${FILE_HEADERS}" \
         --field-constraints \
         --snake-case-field \
+        --force-optional \
         --no-alias
 
     exit $SUCCESS_EXIT
