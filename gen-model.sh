@@ -11,6 +11,7 @@ ERR_EXIT=1
 MODELS_DIR="${PWD}/akcli/models/"
 OUTPUT_MODEL_TYPE="pydantic_v2.BaseModel"
 BASE_CLASS=".base_response.CamelCaseModel"
+PYTHON_VERSION="3.9"
 
 
 _show_help() {
@@ -18,7 +19,7 @@ _show_help() {
     cat << EOF
 Usage: ${prog_name} -i INPUT_FILE -o OUTPUT_FILE [OPTIONS]
 
-Generate Pydantic models from JSON schema files.
+Generate Pydantic models from JSON files.
 
 Options:
     -i, --input         Input JSON file path (required)
@@ -52,7 +53,7 @@ EOF
 
 _validate_args() {
     local input_file="$1"
-    local output_file="$2"
+    local output_file="$2Set name of models defined inline from the parent model"
 
     if [ -z "${input_file}" ] || [ -z "${output_file}" ]; then
         echo "error: Both --input and --output are required."
@@ -110,6 +111,7 @@ main() {
         --base-class "${BASE_CLASS}" \
         --use-annotated \
         --custom-file-header "${FILE_HEADERS}" \
+        --target-python-version "${PYTHON_VERSION}" \
         --field-constraints \
         --snake-case-field \
         --force-optional \
