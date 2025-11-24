@@ -4,6 +4,7 @@
 Helper functions used across the project.
 """
 
+import json
 from typing import Optional
 
 from rich import box
@@ -80,8 +81,6 @@ def print_json(console: Console, data: JSONResponse) -> None:
     """
     Print data as pretty JSON to the console.
     """
-    import json
-
     pretty_json = json.dumps(data, indent=4, default=str)
     console.print(pretty_json, highlight=True)
 
