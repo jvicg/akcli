@@ -9,10 +9,13 @@ and refined with manual adjustments.
 
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, Self
 
 from pydantic import BaseModel, Field
+from pydantic_core import ValidationError
 
+from ..exceptions import InvalidResponse
+from ..typing import JSONResponse
 from ..utils import snakecase_to_camel
 
 
@@ -22,6 +25,16 @@ class CamelCaseModel(BaseModel):
     This is the base model for build all the rest of models, since all API
     responses return values with camel case.
     """
+
+    @classmethod
+    def parse_model(cls, data: JSONResponse) -> Self:
+        """
+        Parse API JSON response into Pydantic model handling possible exceptions.
+        """
+        try:
+            return cls.model_validate(data)
+        except ValidationError as e:
+            raise InvalidResponse(f"Data validation error: {e}")
 
     class Config:
         alias_generator = snakecase_to_camel

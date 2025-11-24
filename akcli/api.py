@@ -13,7 +13,6 @@ from typing import Any, Optional
 
 import requests
 from akamai.edgegrid import EdgeGridAuth, EdgeRc
-from pydantic_core import ValidationError
 
 from . import __title__, __version__
 from .cache import Cache, cached
@@ -21,7 +20,6 @@ from .exceptions import (
     BadRequest,
     InvalidCredentials,
     InvalidEdgeRcSection,
-    InvalidResponse,
     MaxAttempsExceeded,
     MethodNotAllowed,
     ProxyError,
@@ -206,9 +204,6 @@ class AkamaiAPI:
                 f"Unable to connect to proxy {highlight(self._session.proxies['http'])}"
             )
 
-        except ValidationError as e:
-            raise InvalidResponse(f"Response validation error: {e}")
-
         except Exception as e:
             raise RequestError(f"An error occurred while making the request: {e}")
 
@@ -258,7 +253,7 @@ class AkamaiAPI:
 
         data = self._post(endpoint=endpoint, payload=payload)
 
-        return DigResponse.model_validate(data)
+        return DigResponse.parse_model(data)
 
     def translate(self, id: str, trace: bool) -> TranslateResponse:
         """
@@ -270,4 +265,4 @@ class AkamaiAPI:
 
         data = self._post(endpoint=endpoint, payload=payload)
 
-        return TranslateResponse.model_validate(data)
+        return TranslateResponse.parse_model(data)
