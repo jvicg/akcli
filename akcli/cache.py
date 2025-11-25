@@ -14,7 +14,7 @@ from pathlib import Path
 from time import time
 from typing import Any, Optional
 
-from . import __title__
+from .__version__ import __title__
 from .typing import CacheDB, GenericFunction, JSONResponse, Payload, SerializedCacheItem
 
 

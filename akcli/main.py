@@ -14,7 +14,7 @@ import typer
 from rich.console import Console
 from typing_extensions import Annotated
 
-from . import __epilog__, __version__
+from .__version__ import __epilog__, __version__
 from .api import AkamaiAPI
 from .cache import Cache
 from .commands import app as commands_app
@@ -28,7 +28,7 @@ _HELP_PANEL_NETWORK = "Network Options"
 app = typer.Typer(rich_markup_mode="rich", no_args_is_help=True, epilog=__epilog__)
 console = Console()
 console_stderr = Console(stderr=True)
-config = Config(console).main  # Config needs a Console instance for printing warnings
+config = Config().main
 
 
 @dataclass

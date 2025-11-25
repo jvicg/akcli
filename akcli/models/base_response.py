@@ -9,7 +9,7 @@ and refined with manual adjustments.
 
 from __future__ import annotations
 
-from typing import Optional, Self
+from typing import Optional, Type, TypeVar
 
 from pydantic import BaseModel, Field
 from pydantic_core import ValidationError
@@ -17,6 +17,9 @@ from pydantic_core import ValidationError
 from ..exceptions import InvalidResponse
 from ..typing import JSONResponse
 from ..utils import snakecase_to_camel
+
+_T = TypeVar("_T", bound="CamelCaseModel")
+"""Type variable used to represent any subclass of `CamelCaseModel`."""
 
 
 class CamelCaseModel(BaseModel):
@@ -27,7 +30,7 @@ class CamelCaseModel(BaseModel):
     """
 
     @classmethod
-    def parse_model(cls, data: JSONResponse) -> Self:
+    def parse_model(cls: Type[_T], data: JSONResponse) -> _T:
         """
         Parse API JSON response into Pydantic model handling possible exceptions.
         """

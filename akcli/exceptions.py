@@ -37,19 +37,20 @@ ERR_UNEXPECTED = -1
 ERR_KEYBOARD_INTERRUPT = 130
 
 
-class HandledException(Exception):
+class _BaseException(Exception):
     """
-    Base class for all application-specific exceptions.
-
-    Provides a standard message and exit code for controlled termination
-    of the CLI program when an expected error occurs.
+    Private class to build all application-specific exceptions.
     """
 
     exit_code = 99
     default_msg = "An error occurred"
 
     def __init__(self, msg: Optional[str] = None) -> None:
-        self.msg = msg or getattr(self, "default_msg", type(self).default_msg)
+        _exception_name = type(self).__name__
+
+        self.msg = f"{_exception_name}: {msg}" or getattr(
+            self, "default_msg", f"{_exception_name}: {type(self).default_msg}"
+        )
         super().__init__(self.msg)
 
         if not hasattr(self, "exit_code"):
@@ -66,6 +67,25 @@ class HandledException(Exception):
         Gracefully terminate the program using the exception's `exit_code`.
         """
         raise Exit(code=self.exit_code)
+
+
+class _BaseWarning(Warning):
+    """
+    Private class to build all application-specific warnings.
+    """
+
+    pass
+
+
+class HandledException(_BaseException):
+    """
+    Base class to build all handled exceptions in the application.
+
+    Provides a standard message and exit code for controlled termination
+    of the CLI program when an expected error occurs.
+    """
+
+    pass
 
 
 class ResourceNotFound(HandledException):
@@ -145,25 +165,35 @@ class InvalidEdgeRcSection(HandledException):
     default_msg = "The specified .edgerc section is invalid or missing."
 
 
-class InvalidConfigFile(HandledException):
-    """Raised when the config file is invalid or cannot be parsed."""
-
-    exit_code = 30
-    default_msg = "The configuration file is invalid or cannot be parsed."
-
-
-class UnableToGenerateConfigFile(HandledException):
-    """Raised when unable to generate the config file."""
-
-    exit_code = 31
-    default_msg = "Unable to generate the configuration file."
-
-
 class InvalidPanelType(HandledException):
     """Raised when an invalid panel type is used."""
 
     exit_code = 61
     default_msg = "Invalid panel type specified."
+
+
+class InvalidConfigSectionWarning(_BaseWarning):
+    """Warning raised when a section in config file is invalid."""
+
+    pass
+
+
+class InvalidOptionWarning(_BaseWarning):
+    """Warning raised when the configuration cannot be parsed."""
+
+    pass
+
+
+class FileUnableToParseWarning(_BaseWarning):
+    """Warning raised when the configuration cannot be parsed."""
+
+    pass
+
+
+class UnableToGenerateConfigWarning(_BaseWarning):
+    """Warning raised when unable to generate the config file."""
+
+    pass
 
 
 def handle_exceptions(
