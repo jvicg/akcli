@@ -240,7 +240,7 @@ def handle_exceptions(
 
             except Exception as e:
                 print_error(_console, f"Unexpected error: {e}")
-                raise typer.Exit(code=ERR_UNEXPECTED)
+                raise typer.Exit(ERR_UNEXPECTED)
 
         return wrapper  # type: ignore
 
