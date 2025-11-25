@@ -4,11 +4,25 @@
 Command-line interface to make requests to Akamai API.
 """
 
-__title__ = "akcli"
-__url__ = ""
-__description__ = "Command-line interface to make requests to Akamai API."
-__epilog__ = f"See documentation at: [u]{__url__}[/u] for more information."
-__version__ = "v0.1.0"
-__author__ = "Javi C. Guerrero"
-__author_email__ = "jcorreag@pm.me"
-__license__ = "MIT"
+import warnings
+
+from rich.console import Console
+
+from .utils import print_warning
+
+"""
+NOTE: This custom warning handler is configured at module load time because this file
+serves as the main entry point of the application. This ensures that the handler is
+active before any imported module can emit warnings.
+"""
+
+
+def _warning_handler(message, category, filename, lineno, file=None, line=None) -> None:
+    """
+    Custom warning handler to print warnings to stderr using `rich`.
+    """
+    _console = Console(stderr=True)
+    print_warning(_console, f"{category.__name__}: {message}")
+
+
+warnings.showwarning = _warning_handler
