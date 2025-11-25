@@ -4,6 +4,7 @@
 Tool to translate Akamai Error References.
 """
 
+import warnings
 from typing import Any, Optional
 
 import typer
@@ -11,13 +12,12 @@ from rich.table import Table
 from typing_extensions import Annotated
 
 from ..config import Config
-from ..exceptions import handle_exceptions
+from ..exceptions import TranslateNoLogsWarning, handle_exceptions
 from ..typing import TableParams
 from ..utils import (
     create_table,
     highlight,
     print_json,
-    print_warning,
     snakecase_to_title,
 )
 from ._common import common_args
@@ -94,10 +94,11 @@ def translate(
     result = response.result
 
     if result.no_logs:
-        print_warning(
-            console,
+        warnings.warn(
             f"Not found any logs that matches the Reference ID: {highlight(id)}",
+            TranslateNoLogsWarning,
         )
+
         raise typer.Exit()
 
     if ctx.params.get("json"):

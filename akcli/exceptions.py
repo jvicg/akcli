@@ -196,6 +196,18 @@ class UnableToGenerateConfigWarning(_BaseWarning):
     pass
 
 
+class DigNoAnswerWarning(_BaseWarning):
+    """Warning raised when dig command returns no answer."""
+
+    pass
+
+
+class TranslateNoLogsWarning(_BaseWarning):
+    """Warning raised when translate command finds no logs for a given Reference ID."""
+
+    pass
+
+
 def handle_exceptions(
     console: Optional[Console] = None,
 ) -> Callable[[GenericFunction], GenericFunction]:

@@ -4,14 +4,15 @@
 Tool to resolve domains FQDNs using Akamai Edge Diagnostics API.
 """
 
+import warnings
 from enum import Enum
 
 import typer
 from typing_extensions import Annotated
 
 from ..config import Config
-from ..exceptions import handle_exceptions
-from ..utils import create_table, highlight, print_json, print_warning
+from ..exceptions import DigNoAnswerWarning, handle_exceptions
+from ..utils import create_table, highlight, print_json
 from ._common import common_args
 
 _COMMAND_NAME = "dig"
@@ -73,7 +74,9 @@ def dig(
     answer_section = response.result.answer_section
 
     if not answer_section:
-        print_warning(console, f"No register matches the query: {highlight(hostname)}")
+        warnings.warn(
+            f"No register matches the query: {highlight(hostname)}", DigNoAnswerWarning
+        )
         raise typer.Exit()
 
     if ctx.params.get("json"):
