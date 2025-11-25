@@ -14,7 +14,7 @@ from typing import Any, Optional
 import requests
 from akamai.edgegrid import EdgeGridAuth, EdgeRc
 
-from . import __title__, __version__
+from .__version__ import __title__, __version__
 from .cache import Cache, cached
 from .exceptions import (
     BadRequest,
@@ -129,7 +129,7 @@ class AkamaiAPI:
 
         except NoSectionError:
             raise InvalidEdgeRcSection(
-                f"The section '{highlight(self._section)}' was not found in the file: {highlight(str(self._edgerc_path))}."
+                f"The section '{highlight(self._section)}' was not found in EdgeGrid file: {(str(self._edgerc_path))}."
             )
 
     def _build_base_headers(self) -> Headers:
@@ -196,7 +196,7 @@ class AkamaiAPI:
 
         except requests.exceptions.Timeout:
             raise RequestTimeout(
-                f"The request timed after {highlight(str(self._timeout))} seconds."
+                f"The request timed out after {highlight(str(self._timeout))} seconds."
             )
 
         except requests.exceptions.ProxyError:
