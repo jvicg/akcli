@@ -11,9 +11,8 @@ from rich.console import Console
 from .utils import print_warning
 
 """
-NOTE: This custom warning handler is configured at module load time because this file
-serves as the main entry point of the application. This ensures that the handler is
-active before any imported module can emit warnings.
+NOTE: This custom warning handler is configured at top level to ensure 
+that the handler is active before any imported module can emit warnings.
 """
 
 
