@@ -186,9 +186,6 @@ class Config:
         """
         for section in self._data:
             if section not in self.commands_name_class_map:
-                # print_warning(
-                #     self._console, f"Ignoring invalid config section '{section}'."
-                # )
                 warnings.warn(
                     f"Ignoring invalid config section '{highlight(section)}'.",
                     InvalidConfigSectionWarning,
