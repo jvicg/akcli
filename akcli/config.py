@@ -7,20 +7,27 @@ and defines all the default configuration values used on the CLI.
 
 from __future__ import annotations
 
+import warnings
 from dataclasses import asdict, dataclass, fields
 from functools import cached_property
 from pathlib import Path
 from typing import Any, Dict, Iterator, Optional, Tuple, Type, get_type_hints
 
+import tomli
 import tomli_w
-import tomllib
 from platformdirs import user_cache_dir, user_config_dir
 from rich.console import Console
 from typer import Exit
 
-from . import __title__
+from .__version__ import __title__
+from .exceptions import (
+    FileUnableToParseWarning,
+    InvalidConfigSectionWarning,
+    InvalidOptionWarning,
+    UnableToGenerateConfigWarning,
+)
 from .typing import SerializedConfig, SerializedOptions
-from .utils import highlight, print_info, print_warning
+from .utils import highlight, print_info
 
 _CONFIG_FILE_PATH = Path(user_config_dir()) / __title__ / "config.toml"
 _CONFIG_FILE_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -136,7 +143,7 @@ class Config:
             cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self, console: Optional[Console] = None) -> None:
+    def __init__(self) -> None:
         # Avoid calling `__init__` multiple times
         if hasattr(self, "_initialized") and self._initialized:
             return
@@ -144,7 +151,6 @@ class Config:
         self._initialized = True
 
         self._path = _CONFIG_FILE_PATH
-        self._console = console or Console()
         self._data = self._load_config()
 
         # Validate config file and initialize `_OptionsBase` objects
@@ -157,14 +163,14 @@ class Config:
         """
         try:
             with self._path.open("rb") as f:
-                return tomllib.load(f)
+                return tomli.load(f)
 
         except FileNotFoundError:
             return {}
 
         # If the config file cannot be parsed, print a warning and return an empty dict
-        except tomllib.TOMLDecodeError as e:
-            print_warning(self._console, f"Error parsing config file: {e}")
+        except tomli.TOMLDecodeError as e:
+            warnings.warn(f"Error parsing config file: {e}", FileUnableToParseWarning)
             return {}
 
     def _get_section(self, section: str) -> SerializedOptions:
@@ -180,8 +186,12 @@ class Config:
         """
         for section in self._data:
             if section not in self.commands_name_class_map:
-                print_warning(
-                    self._console, f"Ignoring invalid config section '{section}'."
+                # print_warning(
+                #     self._console, f"Ignoring invalid config section '{section}'."
+                # )
+                warnings.warn(
+                    f"Ignoring invalid config section '{highlight(section)}'.",
+                    InvalidConfigSectionWarning,
                 )
 
     def _extract_invalid_key(self, e: TypeError) -> str:
@@ -225,9 +235,9 @@ class Config:
                 return cls(**data_copy)
             except TypeError as e:
                 key = self._extract_invalid_key(e)
-                print_warning(
-                    self._console,
-                    f"Ignoring invalid config option '{key}' in '{name}'.",
+                warnings.warn(
+                    f"Ignoring invalid config option '{highlight(key)}' in '{name}'.",
+                    InvalidOptionWarning,
                 )
                 data_copy.pop(key, None)
 
@@ -285,10 +295,10 @@ def init_config_file(value: Optional[bool], console: Console) -> None:
         print_info(console, f"Succesfully generated config file at {highlighted_path}")
 
     # Print a warning if unable to generate the config file
-    except Exception as e:
-        print_warning(
-            console,
-            f"Unable to generate config file at {highlighted_path}: {e}",
+    except Exception:
+        warnings.warn(
+            f"Unable to generate the configuration file at {highlighted_path}",
+            UnableToGenerateConfigWarning,
         )
 
     raise Exit()
