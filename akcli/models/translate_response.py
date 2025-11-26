@@ -15,15 +15,15 @@ from typing import List, Optional
 
 from pydantic import Field
 
-from .base_response import BaseResponse, CamelCaseModel, IpType
+from ._base import BaseAPIModel, BaseResponse, IpType
 
 
-class Request(CamelCaseModel):
+class Request(BaseAPIModel):
     error_code: Optional[str] = None
     trace_forward_logs: Optional[bool] = None
 
 
-class Log(CamelCaseModel):
+class Log(BaseAPIModel):
     arl: Optional[str] = None
     bytes_received: Optional[str] = None
     bytes_served: Optional[str] = None
@@ -51,11 +51,11 @@ class Log(CamelCaseModel):
     user_agent: Optional[str] = None
 
 
-class LogLines(CamelCaseModel):
+class LogLines(BaseAPIModel):
     logs: List[Log] = Field(default_factory=list)
 
 
-class Result(CamelCaseModel):
+class Result(BaseAPIModel):
     cache_key_hostname: Optional[str] = None
     client_ip: IpType = Field(default_factory=IpType)
     client_request_method: Optional[str] = None

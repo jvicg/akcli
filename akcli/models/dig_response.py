@@ -14,10 +14,10 @@ from typing import List, Optional
 
 from pydantic import Field
 
-from .base_response import BaseResponse, CamelCaseModel
+from ._base import BaseAPIModel, BaseResponse
 
 
-class BaseSectionItem(CamelCaseModel):
+class BaseSectionItem(BaseAPIModel):
     preference_value: Optional[str] = Field(default=None)
     record_class: str
     record_type: str
@@ -37,16 +37,12 @@ AnswerSection = List[AnswerSectionItem]
 AuthoritySection = List[AuthoritySectionItem]
 
 
-class Result(CamelCaseModel):
+class Result(BaseAPIModel):
     answer_section: AnswerSection = Field(default_factory=list)
     authority_section: AuthoritySection = Field(default_factory=list)
     raw_dig: str = Field(alias="result")
 
 
 class DigResponse(BaseResponse):
-    """
-    Model representing the response from the `/edge-diagnostics/v1/dig` endpoint.
-    """
-
     internal_ip: Optional[str] = None
     result: Result
