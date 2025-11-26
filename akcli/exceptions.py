@@ -18,6 +18,11 @@ ERR_UNEXPECTED = -1
 ERR_KEYBOARD_INTERRUPT = 130
 
 
+# ----------------------
+# Exceptions
+# ----------------------
+
+
 class _BaseException(Exception):
     """
     Private base class to build all application-specific exceptions.
@@ -54,14 +59,6 @@ class _BaseException(Exception):
         Gracefully terminate the program using the exception's `exit_code`.
         """
         raise Exit(code=self.exit_code)
-
-
-class _BaseWarning(Warning):
-    """
-    Private base class to build all application-specific warnings.
-    """
-
-    pass
 
 
 class HandledException(_BaseException):
@@ -159,6 +156,19 @@ class InvalidPanelType(HandledException):
     default_msg = "Invalid panel type specified."
 
 
+# ----------------------
+# Warnings
+# ----------------------
+
+
+class _BaseWarning(UserWarning):
+    """
+    Private base class to build all application-specific warnings.
+    """
+
+    pass
+
+
 class InvalidConfigSectionWarning(_BaseWarning):
     """Warning raised when a section in config file is invalid."""
 
@@ -193,6 +203,11 @@ class TranslateNoLogsWarning(_BaseWarning):
     """Warning raised when translate command finds no logs for a given Reference ID."""
 
     pass
+
+
+# ----------------------
+# Handlers
+# ----------------------
 
 
 def handle_exceptions(
