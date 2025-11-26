@@ -14,32 +14,18 @@ from typer import Exit
 from .typing import GenericFunction
 from .utils import print_error
 
-__all__ = [
-    "HandledException",
-    "ResourceNotFound",
-    "InvalidCredentials",
-    "InvalidResponse",
-    "RequestTimeout",
-    "RequestError",
-    "MaxAttempsExceeded",
-    "MethodNotAllowed",
-    "TooManyRequests",
-    "ProxyError",
-    "InvalidEdgeRcSection",
-    "InvalidPanelType",
-    "BadRequest",
-    "handle_exceptions",
-    "ERR_UNEXPECTED",
-    "ERR_KEYBOARD_INTERRUPT",
-]
-
 ERR_UNEXPECTED = -1
 ERR_KEYBOARD_INTERRUPT = 130
 
 
 class _BaseException(Exception):
     """
-    Private class to build all application-specific exceptions.
+    Private base class to build all application-specific exceptions.
+
+    Provides a standard message and exit code for controlled termination
+    of the CLI program when an expected error occurs and a method to exit gracefully.
+
+    All subclasses should define `exit_code` and `default_msg` class attributes.
     """
 
     exit_code = 99
@@ -48,8 +34,12 @@ class _BaseException(Exception):
     def __init__(self, msg: Optional[str] = None) -> None:
         _exception_name = type(self).__name__
 
-        self.msg = f"{_exception_name}: {msg}" or getattr(
-            self, "default_msg", f"{_exception_name}: {type(self).default_msg}"
+        self.msg = (
+            f"{_exception_name}: {msg}"
+            if msg
+            else getattr(  # Set default message if none provided
+                self, "default_msg", f"{_exception_name}: {type(self).default_msg}"
+            )
         )
         super().__init__(self.msg)
 
@@ -71,7 +61,7 @@ class _BaseException(Exception):
 
 class _BaseWarning(Warning):
     """
-    Private class to build all application-specific warnings.
+    Private base class to build all application-specific warnings.
     """
 
     pass
@@ -81,8 +71,8 @@ class HandledException(_BaseException):
     """
     Base class to build all handled exceptions in the application.
 
-    Provides a standard message and exit code for controlled termination
-    of the CLI program when an expected error occurs.
+    This class inherits all behavior from `_BaseException`, but exists only
+    to provide a clean and conventional name to catch in application code.
     """
 
     pass
