@@ -42,7 +42,7 @@ class BaseAPIModel(BaseModel):
         try:
             return cls.model_validate(data)
         except ValidationError as e:
-            raise InvalidResponse(f"Data validation error: {e}")
+            raise InvalidResponse(f"Unable to parse API response: {e}")
 
     class Config:
         alias_generator = snakecase_to_camel
