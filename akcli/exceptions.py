@@ -43,9 +43,6 @@ class _BaseException(Exception):
         )
         super().__init__(self.msg)
 
-        if not hasattr(self, "exit_code"):
-            self.exit_code = type(self).exit_code
-
     def __repr__(self) -> str:
         """
         String representation of the exception.
