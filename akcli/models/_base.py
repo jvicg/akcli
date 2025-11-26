@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
 """
-Module that exposes base models that are used to build the rest of the models.
+Module defining the base models and common API components.
 
-Generated with `datamodel-code-generator` (https://github.com/koxudaxi/datamodel-code-generator)
-and refined with manual adjustments.
+This module provides:
+- A base model for all API responses, handling validation and camel case aliases.
+- Common models and types shared across the API.
 """
 
 from __future__ import annotations
@@ -18,11 +19,15 @@ from ..exceptions import InvalidResponse
 from ..typing import JSONResponse
 from ..utils import snakecase_to_camel
 
-_T = TypeVar("_T", bound="CamelCaseModel")
-"""Type variable used to represent any subclass of `CamelCaseModel`."""
+# ----------------------
+# Base Model
+# ----------------------
+
+_T = TypeVar("_T", bound="BaseAPIModel")
+"""Type variable used to represent any subclass of `BaseAPIModel`."""
 
 
-class CamelCaseModel(BaseModel):
+class BaseAPIModel(BaseModel):
     """
     Base model that set the base alias to camel case to match API format.
     This is the base model for build all the rest of models, since all API
@@ -44,7 +49,12 @@ class CamelCaseModel(BaseModel):
         validate_by_name = True
 
 
-class EdgeIpLocation(CamelCaseModel):
+# ----------------------
+# Common Models
+# ----------------------
+
+
+class EdgeIpLocation(BaseAPIModel):
     """
     Model representing the location information of an edge IP.
     """
@@ -55,7 +65,7 @@ class EdgeIpLocation(CamelCaseModel):
     region_code: Optional[str] = None
 
 
-class IpType(CamelCaseModel):
+class IpType(BaseAPIModel):
     """
     Model representing an IP address with its location.
     """
@@ -64,7 +74,7 @@ class IpType(CamelCaseModel):
     location: EdgeIpLocation = Field(default_factory=EdgeIpLocation, alias="ipLocation")
 
 
-class BaseResponse(CamelCaseModel):
+class BaseResponse(BaseAPIModel):
     """
     Base model that contains common fields present in all Akamai's API responses.
     """
