@@ -126,7 +126,7 @@ class Config:
     _instance = None
 
     """
-    Declare commands options at class level allows `dataclasses.get_type_hints()` 
+    NOTE: Declare commands options at class level allows `dataclasses.get_type_hints()` 
     to automatically discover all commands and their type. This helps to validate config file 
     parameters without needing to hardcode the valid sections/options.
     """
@@ -202,9 +202,9 @@ class Config:
             return "<unknown>"
 
     """
-    NOTE: These three methods may add some complexity to the class, but in return provides an automatic and extensible
-    mechanism for validating configuration parameters. New commands only need to be declared type-annotated attributes
-    at the class level, and they will be discovered and validated without requiring manual updates elsewhere.
+    NOTE: These three methods below may add some complexity to the class, but in return provides an automatic and
+    extensible mechanism for validating configuration parameters. New commands only need to be declared type-annotated
+    attributes at the class level, and they will be discovered and validated without requiring manual updates elsewhere.
     """
 
     @cached_property
