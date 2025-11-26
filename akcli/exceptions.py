@@ -9,7 +9,6 @@ from typing import Any, Callable, Optional
 
 import typer
 from rich.console import Console
-from typer import Exit
 
 from .typing import GenericFunction
 from .utils import print_error
@@ -58,7 +57,7 @@ class _BaseException(Exception):
         """
         Gracefully terminate the program using the exception's `exit_code`.
         """
-        raise Exit(code=self.exit_code)
+        raise typer.Exit(code=self.exit_code)
 
 
 class HandledException(_BaseException):
