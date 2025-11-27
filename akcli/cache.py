@@ -6,7 +6,6 @@ Simple file-based cache implementation to cache HTTP requests.
 
 from __future__ import annotations
 
-import hashlib
 import json
 from dataclasses import dataclass, field
 from functools import wraps
@@ -16,6 +15,7 @@ from typing import Any, Optional
 
 from .__version__ import __title__
 from .typing import CacheDB, GenericFunction, JSONResponse, Payload, SerializedCacheItem
+from .utils import hash_sha256
 
 
 @dataclass
@@ -148,7 +148,7 @@ class Cache:
             if payload is not None
             else f"{method}-{endpoint}"
         )
-        return hashlib.sha256(s.encode()).hexdigest()
+        return hash_sha256(s)
 
 
 # TODO: Consider if this decorator should be more generic

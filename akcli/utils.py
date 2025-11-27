@@ -4,6 +4,7 @@
 Helper functions used across the project.
 """
 
+import hashlib
 import json
 from typing import Optional
 
@@ -27,6 +28,13 @@ def snakecase_to_title(s: str) -> str:
     i.e: "example_name" -> "Example Name"
     """
     return s.replace("_", " ").title()
+
+
+def hash_sha256(s: str) -> str:
+    """
+    Return the SHA256 hash of a given string.
+    """
+    return hashlib.sha256(s.encode("utf-8")).hexdigest()
 
 
 def _print_panel(console: Console, msg: str, panel_type: PanelType) -> None:
