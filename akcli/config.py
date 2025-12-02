@@ -268,14 +268,15 @@ def _to_serializable_dict(obj: _OptionsBase) -> SerializedOptions:
     return d
 
 
-def init_config_file(value: Optional[bool], console: Console) -> None:
+def init_config_file(
+    value: Optional[bool], console: Console, path: Path = _CONFIG_FILE_PATH
+) -> None:
     """
     Generate a default configuration file and exit program.
     """
     if value is None:
         return
 
-    path = _CONFIG_FILE_PATH
     highlighted_path = highlight(str(path))
 
     # Initilialize config and build default config dict
