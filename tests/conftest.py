@@ -4,6 +4,8 @@
 Fixtures used in multiple test modules.
 """
 
+from unittest.mock import mock_open
+
 import pytest
 
 from akcli.cache import _CacheItem
@@ -26,6 +28,11 @@ def endpoint():
 @pytest.fixture
 def payload():
     return {"foo": "bar"}
+
+
+@pytest.fixture
+def dummy_open():
+    return mock_open(read_data="dummy-content")
 
 
 # -----------------------
