@@ -42,7 +42,7 @@ def _poll_if_needed(func: GenericFunction) -> GenericFunction:
 
     @wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> JSONResponse:
-        attempt = kwargs.pop("_poll_attempt", 0)
+        attempt = kwargs.pop("_poll_attempt", 1)
         data = func(*args, **kwargs)
         exec_status = data.get("executionStatus", "")
 
@@ -50,7 +50,7 @@ def _poll_if_needed(func: GenericFunction) -> GenericFunction:
             return data
 
         # Prevent infinite recursion in case the API never completes
-        if attempt > _MAX_POLLING_ATTEMPTS:
+        if attempt >= _MAX_POLLING_ATTEMPTS:
             raise MaxAttempsExceeded("Polling exceeded maximum number of attempts.")
 
         wait = data.get("retryAfter", 0)

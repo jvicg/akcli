@@ -195,7 +195,7 @@ def test_session_configuration(edgerc_path, section, mock_cache, proxy, verify, 
     """
     with (
         patch("akcli.api.requests.Session") as mock_session,
-        patch("akcli.api.EdgeRc", return_value=mock_edgerc_obj),
+        patch("akcli.api.EdgeRc"),
         patch("akcli.api.EdgeGridAuth.from_edgerc"),
         patch("akcli.api.AkamaiAPI._build_base_url"),
     ):
