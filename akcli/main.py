@@ -140,7 +140,7 @@ def main(
         timeout=request_timeout,
         cache=cache,
         proxy=proxy,
-        validate_certs=validate_certs,
+        verify=validate_certs,
     )
 
     # Pass initialized instances to subcommands using context object
