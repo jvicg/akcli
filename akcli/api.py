@@ -60,6 +60,7 @@ def _poll_if_needed(func: GenericFunction) -> GenericFunction:
         kwargs["method"] = "GET"
         kwargs["endpoint"] = data.get("link")
         kwargs["_poll_attempt"] = attempt + 1
+        kwargs.pop("json", None)  # Remove payload if present
 
         # Recursively continue polling until the operation is done
         return wrapper(*args, **kwargs)
