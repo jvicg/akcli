@@ -107,8 +107,6 @@ def test_cached_returns_cached_item(
     """
     cache = fake_self._cache
 
-    # decorated_func = cached(dummy_func).__get__(fake_self)
-
     result = decorated_cached_func(method, endpoint, payload)
 
     assert cache.get_called is True
