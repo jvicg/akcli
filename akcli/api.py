@@ -4,9 +4,9 @@
 HTTP session management, authentication, and request handling for Akamai's API.
 """
 
+import json
 from configparser import NoSectionError
 from functools import wraps
-from json import dumps
 from pathlib import Path
 from time import sleep
 from typing import Any, Optional
@@ -84,7 +84,7 @@ class AkamaiAPI:
         proxy: Optional[str] = None,
         cert: Optional[Certificate] = None,
     ) -> None:
-        self._edgerc_path = edgerc.resolve()
+        self._edgerc_path = edgerc.expanduser().resolve()
         self._edgerc_obj = EdgeRc(self._edgerc_path)
         self._section = section
         self._cache = cache
@@ -168,7 +168,7 @@ class AkamaiAPI:
         except requests.exceptions.HTTPError:
             if res is not None:
                 if res.status_code == 400:
-                    error_body = dumps(res.json(), indent=2)
+                    error_body = json.dumps(res.json(), indent=2)
                     raise BadRequest(
                         f"API returned BadRequest response: \n\n{error_body}"
                     )
@@ -189,9 +189,9 @@ class AkamaiAPI:
                         "Too many requests. You have been rate limited by the API."
                     )
                 else:
-                    error_body = dumps(res.json(), indent=2)
+                    error_body = json.dumps(res.json(), indent=2)
                     raise RequestError(
-                        f"Unhandled HTTP error {res.status_code}: \n\n{error_body}"
+                        f"Unhandled HTTP {res.status_code} error: \n\n{error_body}"
                     )
 
             # In case `res` is None, re-raise the exception
