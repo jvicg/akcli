@@ -86,7 +86,7 @@ def mock_cache():
 @pytest.fixture
 def mock_api(base_url, timeout, edgerc_path, section, mock_cache, mock_edgerc_obj):
     """
-    Fixture that provides a mocked AkamaiAPI instance.
+    Fixture that provides a partially mocked AkamaiAPI instance.
     """
     api = AkamaiAPI.__new__(AkamaiAPI)
     api._edgerc_path = edgerc_path
@@ -102,6 +102,7 @@ def mock_api(base_url, timeout, edgerc_path, section, mock_cache, mock_edgerc_ob
     api._session.verify = False
     api._session.headers = {"Some": "Header"}
     api._cache = mock_cache
+
     return api
 
 
@@ -191,7 +192,7 @@ def test_build_base_headers(mock_api):
 )
 def test_session_configuration(edgerc_path, section, mock_cache, proxy, verify, cert):
     """
-    Test that `Session` is configured as expected.
+    Test that `Session` is configured as expected with multiple configurations.
     """
     with (
         patch("akcli.api.requests.Session") as mock_session,
@@ -236,7 +237,7 @@ def test_request_call_with_expected_params(
     base_url, timeout, mock_api, method, endpoint, json, headers
 ):
     """
-    Test that `_request_build_url` method constructs URLs correctly.
+    Test that `_request` method calls `Session.request` with expected parameters.
     """
     url = base_url + endpoint
 
@@ -267,7 +268,7 @@ def test_request_returns_json_on_200(mock_api):
 
 def _call_request(mock_api, method, endpoint, status_code):
     """
-    Helper function to simulate a request returning a specific status code and raising HTTPError.
+    Helper function to simulate a request returning a specific error status code and raising `HTTPError`.
     """
     mock_resp = MagicMock()
     mock_resp.status_code = status_code
@@ -300,6 +301,17 @@ def test_request_raises_exception_on_non_200(
         _call_request(mock_api, method, endpoint, status_code)
 
 
+@pytest.mark.parametrize("status_code", [499, 502, 503, 504])
+def test_request_raises_exception_on_unhandled_status_code(
+    mock_api, method, endpoint, status_code
+):
+    """
+    Test that `_request` method raises `RequestError` on unhandled status codes.
+    """
+    with pytest.raises(RequestError):
+        _call_request(mock_api, method, endpoint, status_code)
+
+
 @pytest.mark.parametrize(
     "request_exception, raised_exception",
     [
@@ -320,17 +332,6 @@ def test_request_raises_exception_on_timeout_proxy_or_unhandled_error(
         mock_api._request.__wrapped__(mock_api, method, endpoint)
 
 
-@pytest.mark.parametrize("status_code", [499, 502, 503, 504])
-def test_request_raises_exception_on_unhandled_status_code(
-    mock_api, method, endpoint, status_code
-):
-    """
-    Test that `_request` method raises `RequestError` on unhandled status codes.
-    """
-    with pytest.raises(RequestError):
-        _call_request(mock_api, method, endpoint, status_code)
-
-
 @pytest.mark.parametrize(
     "func_name, method, json, headers",
     [
@@ -344,7 +345,7 @@ def test_request_wrappers_call_request_with_expected_params(
     mock_api, func_name, method, json, headers, endpoint
 ):
     """
-    Test that _get/_post/_patch/_delete methods call `_request` with correct params.
+    Test that `_get/_post/_patch/_delete` methods call `_request` with correct params.
     """
     kwargs = {"json": json} if json is not None else {}
     kwargs["headers"] = headers
@@ -375,12 +376,17 @@ def test_poll_if_needed_raises_exception_when_exceed_maximum_retries(method, end
     ):
         decorated_func(method, endpoint)
 
+    from akcli.api import _MAX_POLLING_ATTEMPTS
 
-def test_poll_changes_method_to_get_in_subsequent_cycles(
+    assert mock_request.call_count == _MAX_POLLING_ATTEMPTS
+
+
+def test_poll_changes_params_in_subsequent_cycles_and_returns_expected_when_over(
     endpoint, method_post, payload
 ):
     """
-    Test that `_poll_if_needed` changes method to GET in subsequent polling cycles.
+    Test that `_poll_if_needed` changes method and endpoint in subsequent polling cycles,
+    calls sleep with `retryAfter` value and returns the result when poll is over.
     """
     pending_response = {
         "executionStatus": "IN_PROGRESS",
@@ -394,8 +400,12 @@ def test_poll_changes_method_to_get_in_subsequent_cycles(
     )
     decorated_func = _poll_if_needed(mock_request)
 
-    with patch("akcli.api.sleep"):
+    with patch("akcli.api.sleep") as mock_sleep:
         result = decorated_func(method=method_post, endpoint=endpoint, json=payload)
+
+    mock_sleep.assert_called_with(
+        pending_response.get("retryAfter")
+    )  # Ensure sleep is called with retryAfter value
 
     assert result == completed_response
     assert mock_request.call_count == 3
@@ -411,7 +421,48 @@ def test_poll_changes_method_to_get_in_subsequent_cycles(
         "endpoint": "/dummy/polling/endpoint",
     }
 
-    assert mock_request.call_args_list[2].kwargs == {
-        "method": "GET",
-        "endpoint": "/dummy/polling/endpoint",
+    # Subsequent calls should be identical to the previous polling call
+    assert (
+        mock_request.call_args_list[2].kwargs == mock_request.call_args_list[1].kwargs
+    )
+
+
+@pytest.mark.parametrize(
+    "query_type, hostname",
+    list(product(["A", "AAAA", "CNAME"], ["example.com", "dummy.tld"])),
+)
+def test_dig(mock_api, query_type, hostname):
+    """
+    Test that `dig` method works as expected.
+    """
+    expected_endpoint = "/edge-diagnostics/v1/dig"
+    expected_payload = {
+        "isGtmHostname": False,
+        "queryType": query_type,
+        "hostname": hostname,
     }
+
+    with (
+        patch.object(mock_api, "_post") as mock_post,
+        patch("akcli.api.DigResponse"),  # Models won't be tested on this suite
+    ):
+        mock_api.dig(hostname, query_type)
+
+    mock_post.assert_called_once_with(endpoint=expected_endpoint, json=expected_payload)
+
+
+@pytest.mark.parametrize("id, trace", [("#someid", True), ("#otherid", False)])
+def test_translate(mock_api, id, trace):
+    """
+    Test that `translate` method works as expected.
+    """
+    expected_endpoint = "/edge-diagnostics/v1/error-translator"
+    expected_payload = {"errorCode": id, "traceForwardLogs": trace}
+
+    with (
+        patch.object(mock_api, "_post") as mock_post,
+        patch("akcli.api.TranslateResponse"),
+    ):
+        mock_api.translate(id, trace)
+
+    mock_post.assert_called_once_with(endpoint=expected_endpoint, json=expected_payload)
