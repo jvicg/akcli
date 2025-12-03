@@ -116,7 +116,7 @@ class Cache:
 
         item = _CacheItem.from_dict(serialized_item)
 
-        # Check if expired because the cache_db in memory has not been updated yet
+        # Only return if not expired
         if not item.is_expired:
             return item
 
