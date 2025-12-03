@@ -60,6 +60,7 @@ def _poll_if_needed(func: GenericFunction) -> GenericFunction:
         kwargs["method"] = "GET"
         kwargs["endpoint"] = data.get("link")
         kwargs["_poll_attempt"] = attempt + 1
+        kwargs.pop("json", None)  # Remove payload if present
 
         # Recursively continue polling until the operation is done
         return wrapper(*args, **kwargs)
@@ -79,7 +80,7 @@ class AkamaiAPI:
         section: str,
         timeout: int,
         cache: Cache,
-        validate_certs: bool = True,
+        verify: bool = True,
         proxy: Optional[str] = None,
         cert: Optional[Certificate] = None,
     ) -> None:
@@ -88,11 +89,10 @@ class AkamaiAPI:
         self._section = section
         self._cache = cache
         self._base_url = self._build_base_url()
-        self._validate_certs = validate_certs
         self._timeout = timeout
 
         # Disable warnings for insecure certificate
-        if not self._validate_certs:
+        if not verify:
             from urllib3 import disable_warnings
             from urllib3.exceptions import InsecureRequestWarning
 
@@ -101,6 +101,7 @@ class AkamaiAPI:
         # Session configuration
         self._session = requests.Session()
         self._session.cert = cert
+        self._session.verify = verify
         self._session.auth = EdgeGridAuth.from_edgerc(self._edgerc_obj, self._section)
         self._session.proxies = (
             {"http": "", "https": ""}
@@ -155,7 +156,6 @@ class AkamaiAPI:
         url = self._base_url + endpoint
 
         kwargs["timeout"] = self._timeout
-        kwargs["verify"] = self._validate_certs
 
         # Initialize `res` to None for preventing `UnboundLocalError` in some hypothetical scenarios
         res = None
@@ -189,7 +189,10 @@ class AkamaiAPI:
                         "Too many requests. You have been rate limited by the API."
                     )
                 else:
-                    raise
+                    error_body = dumps(res.json(), indent=2)
+                    raise RequestError(
+                        f"Unhandled HTTP error {res.status_code}: \n\n{error_body}"
+                    )
 
             # In case `res` is None, re-raise the exception
             raise
@@ -214,23 +217,23 @@ class AkamaiAPI:
         return self._request(method="GET", endpoint=endpoint, headers=headers)
 
     def _post(
-        self, endpoint: str, payload: dict, headers: Optional[Headers] = None
+        self, endpoint: str, json: dict, headers: Optional[Headers] = None
     ) -> JSONResponse:
         """
         Make a POST request.
         """
         return self._request(
-            method="POST", endpoint=endpoint, json=payload, headers=headers
+            method="POST", endpoint=endpoint, json=json, headers=headers
         )
 
     def _patch(
-        self, endpoint: str, payload: dict, headers: Optional[Headers] = None
+        self, endpoint: str, json: dict, headers: Optional[Headers] = None
     ) -> JSONResponse:
         """
         Make a PATCH request.
         """
         return self._request(
-            method="PATCH", endpoint=endpoint, json=payload, headers=headers
+            method="PATCH", endpoint=endpoint, json=json, headers=headers
         )
 
     def _delete(self, endpoint: str, headers: Optional[Headers] = None) -> JSONResponse:
@@ -251,7 +254,7 @@ class AkamaiAPI:
             "hostname": hostname,
         }
 
-        data = self._post(endpoint=endpoint, payload=payload)
+        data = self._post(endpoint=endpoint, json=payload)
 
         return DigResponse.parse_model(data)
 
@@ -263,6 +266,6 @@ class AkamaiAPI:
         endpoint = "/edge-diagnostics/v1/error-translator"
         payload = {"errorCode": id, "traceForwardLogs": trace}
 
-        data = self._post(endpoint=endpoint, payload=payload)
+        data = self._post(endpoint=endpoint, json=payload)
 
         return TranslateResponse.parse_model(data)
