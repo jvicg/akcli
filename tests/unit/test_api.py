@@ -125,7 +125,6 @@ def test_edgerc_methods_are_called(edgerc_path, section, mock_edgerc_obj, mock_c
     """
     Test that all the methods related to edgerc are called with the expected params.
     """
-
     with (
         patch("akcli.api.EdgeRc", return_value=mock_edgerc_obj) as mock_edgerc,
         patch("akcli.api.EdgeGridAuth.from_edgerc") as mock_from_edgerc,
@@ -378,9 +377,11 @@ def test_poll_if_needed_raises_exception_when_exceed_maximum_retries(method, end
         decorated_func(method, endpoint)
 
 
-def test_poll_changes_method_to_get_in_later_cycles(endpoint, method_post, payload):
+def test_poll_changes_method_to_get_in_subsequent_cycles(
+    endpoint, method_post, payload
+):
     """
-    Test that `_poll_if_needed` changes method to GET in later polling cycles.
+    Test that `_poll_if_needed` changes method to GET in subsequent polling cycles.
     """
     pending_response = {
         "executionStatus": "IN_PROGRESS",
