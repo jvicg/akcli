@@ -120,7 +120,7 @@ class TooManyRequests(HandledException):
     default_msg = "Too many requests: the API rate limit has been reached."
 
 
-class ProxyError(HandledException):
+class RequestProxyError(HandledException):
     """Raised when a proxy error occurs during a request."""
 
     exit_code = 18

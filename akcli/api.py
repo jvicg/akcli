@@ -22,8 +22,8 @@ from .exceptions import (
     InvalidEdgeRcSection,
     MaxAttempsExceeded,
     MethodNotAllowed,
-    ProxyError,
     RequestError,
+    RequestProxyError,
     RequestTimeout,
     ResourceNotFound,
     TooManyRequests,
@@ -203,7 +203,7 @@ class AkamaiAPI:
             )
 
         except requests.exceptions.ProxyError:
-            raise ProxyError(
+            raise RequestProxyError(
                 f"Unable to connect to proxy {highlight(self._session.proxies['http'])}"
             )
 

@@ -11,8 +11,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from akamai.edgegrid import EdgeRc
 from requests import Session
-from requests.exceptions import HTTPError, Timeout
-from requests.exceptions import ProxyError as RequestProxyError
+from requests.exceptions import HTTPError, ProxyError, Timeout
 
 from akcli.api import AkamaiAPI, _poll_if_needed
 from akcli.cache import Cache
@@ -22,8 +21,8 @@ from akcli.exceptions import (
     InvalidEdgeRcSection,
     MaxAttempsExceeded,
     MethodNotAllowed,
-    ProxyError,
     RequestError,
+    RequestProxyError,
     RequestTimeout,
     ResourceNotFound,
     TooManyRequests,
@@ -305,7 +304,7 @@ def test_request_raises_exception_on_non_200(
     "request_exception, raised_exception",
     [
         (Timeout, RequestTimeout),
-        (RequestProxyError, ProxyError),
+        (ProxyError, RequestProxyError),
         (Exception, RequestError),
     ],
 )
