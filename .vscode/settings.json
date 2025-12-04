@@ -8,14 +8,14 @@
     "python.terminal.activateEnvInCurrentTerminal": true,
     "python.analysis.typeEvaluation.deprecateTypingAliases": false,
     
-    // editor
+    // formatter
     "ruff.importStrategy": "useBundled",
     "editor.defaultFormatter": "charliermarsh.ruff",
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true,
     "editor.codeActionsOnSave": {
         "source.organizeImports": "always",
+        "source.unusedImports": "explicit",
         "source.fixAll": "always",
-        "source.unusedImports": "explicit"
     },
 }
