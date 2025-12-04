@@ -80,7 +80,7 @@ def dig(
         raise typer.Exit()
 
     if ctx.params.get("json"):
-        print_json(console, response.model_dump())
+        print_json(console, response.model_dump(by_alias=True))
         raise typer.Exit()
 
     table = create_table(
