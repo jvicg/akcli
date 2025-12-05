@@ -1,0 +1,5 @@
+[default]
+client_secret = dummy-client-secret
+host = {https_server}
+access_token = {access_token}
+client_token = {client_token}

@@ -1,0 +1,51 @@
+{
+  "completedTime": "2020-12-24T04:25:42Z",
+  "createdBy": "jperez",
+  "createdTime": "2020-12-24T04:25:40Z",
+  "edgeIpLocation": {
+    "asNumber": 20940,
+    "city": "TOKYO",
+    "countryCode": "JP",
+    "regionCode": "13"
+  },
+  "executionStatus": "SUCCESS",
+  "internalIp": "192.0.2.16",
+  "result": {
+    "answerSection": [
+      {
+        "hostname": "www.example.com.",
+        "preferenceValue": null,
+        "recordClass": "IN",
+        "recordType": "CNAME",
+        "ttl": 3600,
+        "value": "www.example.com."
+      },
+      {
+        "hostname": "www.example.com.",
+        "preferenceValue": null,
+        "recordClass": "IN",
+        "recordType": "A",
+        "ttl": 600,
+        "value": "192.0.2.85"
+      }
+    ],
+    "authoritySection": [
+      {
+        "domain": "example.com.",
+        "preferenceValue": null,
+        "recordClass": "IN",
+        "recordType": "NS",
+        "ttl": 86399,
+        "value": "a.example.net."
+      },
+      {
+        "domain": "example.com.",
+        "preferenceValue": null,
+        "recordClass": "IN",
+        "recordType": "NS",
+        "ttl": 86399,
+        "value": "b.example.net."
+      }
+    ]
+  }
+}
