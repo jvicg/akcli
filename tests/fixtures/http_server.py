@@ -6,6 +6,8 @@ Simple HTTPS server to simulate Akamai API and handle responses in the tests.
 Some of the code here is inspired by https://github.com/httpie/cli/blob/master/tests/utils/http_server.py
 """
 
+from __future__ import annotations
+
 import json
 import ssl
 import threading
@@ -14,7 +16,7 @@ from contextlib import contextmanager
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from time import sleep
-from typing import IO, Any, Callable, Dict, Generator, Literal
+from typing import IO, Any, Callable, Dict, Generator, Literal, Type, TypeVar
 from urllib.parse import urlparse
 
 from .constants import (
@@ -40,6 +42,8 @@ def _parse_json_file_into_bytes(f: IO) -> bytes:
 # Requests Handler
 # -----------------------
 
+_T = TypeVar("_T", bound="_HTTPRequestHandler")
+
 
 class _HTTPRequestHandler(BaseHTTPRequestHandler):
     """
@@ -49,7 +53,7 @@ class _HTTPRequestHandler(BaseHTTPRequestHandler):
     handlers = defaultdict(dict)
 
     @classmethod
-    def endpoint(cls, method, endpoint) -> Callable[..., Any]:
+    def endpoint(cls: Type[_T], method: str, endpoint: str) -> Callable[..., Any]:
         """
         Decorator to register a handler function for a specific HTTP method and endpoint.
         The function will be stored in the `handlers` dictionary with method and endpoint as keys.
@@ -146,7 +150,7 @@ class _HTTPRequestHandler(BaseHTTPRequestHandler):
         self.wfile.write(data)
         self.wfile.flush()
 
-    def send_ok(self, data) -> None:
+    def send_ok(self, data: bytes) -> None:
         """
         Return a 200 OK response.
         """
