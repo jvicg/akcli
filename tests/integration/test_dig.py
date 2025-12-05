@@ -152,7 +152,7 @@ def test_response_with_invalid_query_type(
     assert "Invalid value for '--query-type'" in result.output
 
 
-def test_dig_response_with_timeout(https_server, edgerc, runner):
+def test_response_with_timeout(https_server, edgerc, runner):
     """
     Test the `dig` command with a short timeout to simulate a timeout scenario.
     """
