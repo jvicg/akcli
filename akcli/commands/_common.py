@@ -27,9 +27,9 @@ def common_args(
         json: Annotated[
             Optional[bool], typer.Option("--json", help="Output in JSON format.")
         ] = None,
-        csv: Annotated[
-            Optional[bool], typer.Option("--csv", help="Output in CSV format.")
-        ] = None,
+        # csv: Annotated[
+        #     Optional[bool], typer.Option("--csv", help="Output in CSV format.")
+        # ] = None,
         **kwargs,
     ) -> None:
         return func(ctx=ctx, **kwargs)
