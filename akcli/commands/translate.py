@@ -44,7 +44,7 @@ config = Config().translate
 
 def _build_table_recursive(table: Table, obj: Any, title: Optional[str] = None) -> None:
     """
-    Recursively create subsections and append them to the main `table` till `obj` is not a dict,
+    Recursively create subtables and append them to the main `table` till `obj` is not a dict,
     for each dictionary a subtable will be created.
     """
     if obj is None:
@@ -102,7 +102,7 @@ def translate(
         raise typer.Exit()
 
     if ctx.params.get("json"):
-        print_json(console, response.model_dump())
+        print_json(console, response.model_dump(by_alias=True))
         raise typer.Exit()
 
     table = create_table(
