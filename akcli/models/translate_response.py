@@ -76,7 +76,7 @@ class Result(BaseAPIModel):
     grep_url: Optional[str] = None
     http_response_code: Optional[int] = None
     log_lines: LogLines = Field(default_factory=LogLines)
-    origin_ip: Optional[str] = None
+    origin_ip: Optional[IpType] = Field(default_factory=IpType)
     property_name: Optional[str] = None
     property_url: Optional[str] = None
     reason_for_failure: Optional[str] = None
