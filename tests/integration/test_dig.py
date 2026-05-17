@@ -137,3 +137,26 @@ def test_response_in_json_format(https_server, edgerc, runner, hostname, cache_d
     assert "result" in result.output
     assert "example.com" in result.output
     assert "recordType" in result.output
+
+
+def test_response_with_raw_and_json_flags(
+    https_server, edgerc, runner, hostname, cache_dir
+):
+    """
+    Test that using --raw and --json simultaneously produces an error.
+    """
+    cmd = [
+        "--edgerc",
+        edgerc,
+        "--cache-dir",
+        cache_dir,
+        "--no-validate-certs",
+        "dig",
+        hostname,
+        "--raw",
+        "--json",
+    ]
+    result = runner.invoke(app, cmd)
+
+    assert result.exit_code != 0
+    assert "MutuallyExclusiveArgs" in result.output

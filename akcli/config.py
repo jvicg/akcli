@@ -42,6 +42,7 @@ _DEFAULT_REQUEST_TIMEOUT = 15
 _DEFAULT_VALIDATE_CERTS = True
 
 _DEFAULT_DIG_QUERY_TYPE = "A"
+_DEFAULT_DIG_RAW = False
 _DEFAULT_DIG_SHORT_OUTPUT = False
 
 _DEFAULT_TRANSLATE_TRACE = False
@@ -101,6 +102,7 @@ class _DigOptions(_OptionsBase):
     """
 
     query_type: str = _DEFAULT_DIG_QUERY_TYPE
+    raw: bool = _DEFAULT_DIG_RAW
     short_output: bool = _DEFAULT_DIG_SHORT_OUTPUT
 
 
@@ -126,8 +128,8 @@ class Config:
     _instance = None
 
     """
-    NOTE: Declare commands options at class level allows `dataclasses.get_type_hints()` 
-    to automatically discover all commands and their type. This helps to validate config file 
+    NOTE: Declare commands options at class level allows `dataclasses.get_type_hints()`
+    to automatically discover all commands and their type. This helps to validate config file
     parameters without needing to hardcode the valid sections/options.
     """
 

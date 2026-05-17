@@ -35,7 +35,7 @@ class _BaseException(Exception):
     exit_code = 99
     default_msg = "An error occurred"
 
-    def __init__(self, msg: Optional[str] = None) -> None:
+    def __init__(self, msg: Optional[str] = None, *args, **kwargs) -> None:
         _exception_name = type(self).__name__
 
         self.msg = (
@@ -45,7 +45,7 @@ class _BaseException(Exception):
                 self, "default_msg", f"{_exception_name}: {type(self).default_msg}"
             )
         )
-        super().__init__(self.msg)
+        super().__init__(self.msg, *args, **kwargs)
 
     def __repr__(self) -> str:
         """
@@ -160,6 +160,13 @@ class InvalidPanelType(HandledException):
 
     exit_code = 61
     default_msg = "Invalid panel type specified."
+
+
+class MutuallyExclusiveArgs(HandledException):
+    """Raised if mutually exclusive arguments are used together."""
+
+    exit_code = 62
+    default_msg = "Mutually exclusive arguments."
 
 
 # ----------------------
