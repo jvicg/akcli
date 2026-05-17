@@ -1,0 +1,15 @@
+{
+  "completedTime": "2021-05-19T09:28:38+0000",
+  "createdBy": "alfulani",
+  "createdTime": "2021-05-19T09:28:24+0000",
+  "executionStatus": "SUCCESS",
+  "request": {
+    "errorCode": "1.5e3b5b68.1621415935.409841",
+    "traceForwardLogs": true
+  },
+  "requestId": 345,
+  "result": {
+    "noLogsErrorTitle": "Failed to get logs. Try again later.",
+    "noLogsErrorType": "not.found.logs.retry"
+  }
+}
