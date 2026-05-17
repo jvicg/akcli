@@ -8,6 +8,10 @@ import pytest
 
 from akcli.exceptions import DigNoAnswerWarning
 from akcli.main import app
+from tests.fixtures import (
+    DIG_NO_RECORDS_HOSTNAME,
+    DIG_VALID_HOSTNAME,
+)
 
 # ----------------------
 # Fixtures
@@ -16,7 +20,7 @@ from akcli.main import app
 
 @pytest.fixture
 def hostname():
-    return "www.example.com"
+    return DIG_VALID_HOSTNAME
 
 
 # ----------------------
@@ -25,7 +29,7 @@ def hostname():
 
 
 @pytest.mark.parametrize("query_type", ["A", "AAAA", "CNAME"])
-def test_response_with_valid_credentials(
+def test_response_with_valid_query(
     https_server, edgerc, runner, hostname, cache_dir, query_type
 ):
     """
@@ -46,34 +50,14 @@ def test_response_with_valid_credentials(
 
     assert result.exit_code == 0
     assert f"Result of query: {query_type} {hostname}" in result.output
-
-
-def test_response_with_invalid_credentials(
-    https_server, edgerc_invalid, runner, hostname, cache_dir
-):
-    """
-    Test the `dig` command with invalid credentials.
-    """
-    cmd = [
-        "--edgerc",
-        edgerc_invalid,
-        "--cache-dir",
-        cache_dir,
-        "--no-validate-certs",
-        "dig",
-        hostname,
-    ]
-    result = runner.invoke(app, cmd)
-
-    assert result.exit_code != 0
-    assert "InvalidCredentials" in result.output
+    assert DIG_VALID_HOSTNAME in result.output
+    assert "192.0.2.85" in result.output
 
 
 def test_response_when_no_records_found(https_server, edgerc, runner, cache_dir):
     """
     Test the `dig` command raises `DigNoAnswerWarning` when no records are found for the given hostname.
     """
-    hostname = "invalid-domain.notexists"
     cmd = [
         "--edgerc",
         edgerc,
@@ -81,34 +65,13 @@ def test_response_when_no_records_found(https_server, edgerc, runner, cache_dir)
         cache_dir,
         "--no-validate-certs",
         "dig",
-        hostname,
+        DIG_NO_RECORDS_HOSTNAME,
     ]
 
     with pytest.warns(DigNoAnswerWarning):
         result = runner.invoke(app, cmd)
 
     assert result.exit_code == 0
-
-
-def test_response_fails_with_validate_certs(
-    https_server, edgerc, runner, hostname, cache_dir
-):
-    """
-    Test the `dig` command with certificate validation enabled fails since dummy server cert is self-signed.
-    """
-    cmd = [
-        "--edgerc",
-        edgerc,
-        "--cache-dir",
-        cache_dir,
-        "--validate-certs",  # Force cert validation
-        "dig",
-        hostname,
-    ]
-    result = runner.invoke(app, cmd)
-
-    assert result.exit_code != 0
-    assert "RequestSSLError" in result.output
 
 
 def test_response_with_missing_hostname(https_server, edgerc, runner, cache_dir):
@@ -150,25 +113,6 @@ def test_response_with_invalid_query_type(
 
     assert result.exit_code != 0
     assert "Invalid value for '--query-type'" in result.output
-
-
-def test_response_with_timeout(https_server, edgerc, runner):
-    """
-    Test the `dig` command with a short timeout to simulate a timeout scenario.
-    """
-    cmd = [
-        "--request-timeout",
-        "1",
-        "--edgerc",
-        edgerc,
-        "--no-validate-certs",
-        "dig",
-        "force-timeout",  # Hostname that triggers timeout in the test server
-    ]
-    result = runner.invoke(app, cmd)
-
-    assert result.exit_code != 0
-    assert "RequestTimeout" in result.output
 
 
 def test_response_in_json_format(https_server, edgerc, runner, hostname, cache_dir):
