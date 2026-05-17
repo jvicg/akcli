@@ -59,6 +59,7 @@ def test_init_config_file_success(dummy_console, dummy_open):
         patch("akcli.config.tomli.load", return_value={}),
         patch("akcli.config.tomli_w.dump") as mock_dump,
         patch("akcli.config.print_info") as mock_print,
+        patch("typer.confirm", return_value=True),  # Auto-confirm
         pytest.raises(Exit),
     ):
         init_config_file(True, dummy_console)
@@ -74,6 +75,7 @@ def test_init_config_file_warns_on_error(dummy_console):
     """
     with (
         patch("akcli.config.Path.open", side_effect=FileNotFoundError),
+        patch("typer.confirm", return_value=True),
         pytest.warns(UnableToGenerateConfigWarning),
         pytest.raises(Exit),
     ):
@@ -112,3 +114,19 @@ def test_init_config_file_writes_correct_content(tmp_path, dummy_console):
     assert "edgerc_section" in content["main"]
     assert content["main"]["edgerc_section"] == "default"
     assert "proxy" not in content["main"]
+
+
+def test_init_config_file_aborts_if_user_declines(dummy_console, tmp_path):
+    """
+    Test that init_config_file exits without writing if user declines overwrite.
+    """
+    existing_file = tmp_path / "config.toml"
+    existing_file.write_text("original content")
+
+    with (
+        patch("typer.confirm", return_value=False),
+        pytest.raises(Exit),
+    ):
+        init_config_file(True, dummy_console, path=existing_file)
+
+    assert existing_file.read_text() == "original content"

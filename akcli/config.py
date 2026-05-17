@@ -15,9 +15,9 @@ from typing import Any, Dict, Iterator, Optional, Tuple, Type, get_type_hints
 
 import tomli
 import tomli_w
+import typer
 from platformdirs import user_cache_dir, user_config_dir
 from rich.console import Console
-from typer import Exit, confirm
 
 from .__version__ import __title__
 from .exceptions import (
@@ -290,9 +290,9 @@ def init_config_file(
 
     # Ask for confirmation in case config file already exists
     if path.exists():
-        overwrite = confirm(f"Config file already exists at {path}. Overwrite?")
+        overwrite = typer.confirm(f"Config file already exists at {path}. Overwrite?")
         if not overwrite:
-            raise Exit()
+            raise typer.Exit()
 
     try:
         with path.open("wb") as f:
@@ -307,4 +307,4 @@ def init_config_file(
             UnableToGenerateConfigWarning,
         )
 
-    raise Exit()
+    raise typer.Exit()
