@@ -17,7 +17,7 @@ import tomli
 import tomli_w
 from platformdirs import user_cache_dir, user_config_dir
 from rich.console import Console
-from typer import Exit
+from typer import Exit, confirm
 
 from .__version__ import __title__
 from .exceptions import (
@@ -287,6 +287,12 @@ def init_config_file(
         name: _to_serializable_dict(cls())
         for name, cls in config.commands_name_class_map.items()
     }
+
+    # Ask for confirmation in case config file already exists
+    if path.exists():
+        overwrite = confirm(f"Config file already exists at {path}. Overwrite?")
+        if not overwrite:
+            raise Exit()
 
     try:
         with path.open("wb") as f:
