@@ -21,7 +21,8 @@
 
     // tests
     "python.testing.pytestArgs": [
-        "tests"
+        "tests",
+        "-v"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
