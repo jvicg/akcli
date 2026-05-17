@@ -11,7 +11,7 @@ import typer
 from typing_extensions import Annotated
 
 from ..config import Config
-from ..exceptions import DigNoAnswerWarning, handle_exceptions
+from ..exceptions import DigNoAnswerWarning, MutuallyExclusiveArgs, handle_exceptions
 from ..utils import create_table, highlight, print_json
 from ._common import common_args
 
@@ -60,6 +60,10 @@ def dig(
     query_type: Annotated[
         _DNSType, typer.Option(help="Choose type of query.")
     ] = config.query_type,  # type: ignore
+    raw: Annotated[
+        bool,
+        typer.Option(help="Print dig raw response (just like regular `dig` command)."),
+    ] = config.raw,
     short: Annotated[
         bool, typer.Option(help="Show only returned values.")
     ] = config.short_output,
@@ -70,6 +74,10 @@ def dig(
     api = ctx.obj.api
     console = ctx.obj.console
 
+    # Raise error if --raw and --json used simultaneously
+    if raw and ctx.params.get("json"):
+        raise MutuallyExclusiveArgs("'--raw' and '--json' are mutually exclusive.")
+
     response = api.dig(hostname, query_type)
     answer_section = response.result.answer_section
 
@@ -79,7 +87,12 @@ def dig(
         )
         raise typer.Exit()
 
-    if ctx.params.get("json"):
+    if raw:
+        raw_dig = response.result.raw_dig
+        console.print(raw_dig)
+        raise typer.Exit()
+
+    elif ctx.params.get("json"):
         print_json(console, response.model_dump(by_alias=True))
         raise typer.Exit()
 
