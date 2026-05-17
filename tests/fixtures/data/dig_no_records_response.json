@@ -1,0 +1,24 @@
+{
+    "createdBy": "jperez",
+    "createdTime": "2025-12-05T14:27:03Z",
+    "completedTime": "2025-12-05T14:27:05Z",
+    "executionStatus": "SUCCESS",
+    "internalIp": "192.0.2.16",
+    "request": {
+        "hostname": "invalid-domain.notexists",
+        "queryType": "A",
+        "isGtmHostname": false
+    },
+    "result": {
+        "authoritySection": [
+            {
+                "domain": ".",
+                "ttl": 30,
+                "recordClass": "IN",
+                "recordType": "SOA",
+                "preferenceValue": null,
+                "value": "a.root-servers.net."
+            }
+        ]
+    }
+}

@@ -19,10 +19,10 @@ from ._base import BaseAPIModel, BaseResponse
 
 class BaseSectionItem(BaseAPIModel):
     preference_value: Optional[str] = Field(default=None)
-    record_class: str
-    record_type: str
-    ttl: int
-    value: str
+    record_class: Optional[str] = Field(default=None)
+    record_type: Optional[str] = Field(default=None)
+    ttl: Optional[int] = Field(default=None)
+    value: Optional[str] = Field(default=None)
 
 
 class AnswerSectionItem(BaseSectionItem):
@@ -40,7 +40,7 @@ AuthoritySection = List[AuthoritySectionItem]
 class Result(BaseAPIModel):
     answer_section: AnswerSection = Field(default_factory=list)
     authority_section: AuthoritySection = Field(default_factory=list)
-    raw_dig: str = Field(alias="result")
+    raw_dig: Optional[str] = Field(alias="result", default=None)
 
 
 class DigResponse(BaseResponse):

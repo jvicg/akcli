@@ -141,6 +141,13 @@ class MaxAttempsExceeded(HandledException):
     default_msg = "Excedeed the max polling attemps."
 
 
+class RequestSSLError(HandledException):
+    """Raised when an SSL error occurs during a request."""
+
+    exit_code = 21
+    default_msg = "An SSL error occurred while connecting to the API."
+
+
 class InvalidEdgeRcSection(HandledException):
     """Raised when the .edgerc section is invalid or not found."""
 

@@ -55,8 +55,17 @@ class LogLines(BaseAPIModel):
     logs: List[Log] = Field(default_factory=list)
 
 
+class CertificateErrorDetails(BaseAPIModel):
+    error: Optional[str] = None
+    finger_print: Optional[str] = None
+    solution: Optional[str] = None
+
+
 class Result(BaseAPIModel):
     cache_key_hostname: Optional[str] = None
+    certificate_error_details: CertificateErrorDetails = Field(
+        default_factory=CertificateErrorDetails
+    )
     client_ip: IpType = Field(default_factory=IpType)
     client_request_method: Optional[str] = None
     connecting_ip: IpType = Field(default_factory=IpType, title="Connecting IP.")
@@ -67,7 +76,7 @@ class Result(BaseAPIModel):
     grep_url: Optional[str] = None
     http_response_code: Optional[int] = None
     log_lines: LogLines = Field(default_factory=LogLines)
-    origin_ip: Optional[str] = None
+    origin_ip: Optional[IpType] = Field(default_factory=IpType)
     property_name: Optional[str] = None
     property_url: Optional[str] = None
     reason_for_failure: Optional[str] = None

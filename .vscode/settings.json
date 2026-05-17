@@ -7,7 +7,7 @@
     "python.analysis.typeEvaluation.strictSetInference": true,
     "python.terminal.activateEnvInCurrentTerminal": true,
     "python.analysis.typeEvaluation.deprecateTypingAliases": false,
-    
+
     // formatter
     "ruff.importStrategy": "useBundled",
     "editor.defaultFormatter": "charliermarsh.ruff",
@@ -15,7 +15,16 @@
     "editor.formatOnPaste": true,
     "editor.codeActionsOnSave": {
         "source.organizeImports": "always",
-        "source.unusedImports": "explicit",
+        "source.unusedImports": "never",
         "source.fixAll": "always",
     },
+
+    // tests
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "python-envs.pythonProjects": [],
 }

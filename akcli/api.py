@@ -24,6 +24,7 @@ from .exceptions import (
     MethodNotAllowed,
     RequestError,
     RequestProxyError,
+    RequestSSLError,
     RequestTimeout,
     ResourceNotFound,
     TooManyRequests,
@@ -200,6 +201,11 @@ class AkamaiAPI:
         except requests.exceptions.Timeout:
             raise RequestTimeout(
                 f"The request timed out after {highlight(str(self._timeout))} seconds."
+            )
+
+        except requests.exceptions.SSLError as e:
+            raise RequestSSLError(
+                f"An SSL error occurred while connecting to the API: {e}"
             )
 
         except requests.exceptions.ProxyError:

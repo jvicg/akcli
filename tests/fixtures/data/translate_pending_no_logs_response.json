@@ -1,0 +1,12 @@
+{
+    "requestId": "no-logs-response-id",
+    "request": {
+        "errorCode": "#someErrorCode",
+        "traceForwardLogs": false
+    },
+    "executionStatus": "IN_PROGRESS",
+    "retryAfter": 1,
+    "link": "/edge-diagnostics/v1/error-translator/requests/no-logs-response-id",
+    "createdTime": "2025-12-06T14:02:12Z",
+    "createdBy": "jkowalski"
+}

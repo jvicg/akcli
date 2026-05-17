@@ -1,0 +1,146 @@
+{
+  "completedTime": "2021-05-19T09:28:38Z",
+  "createdBy": "jperez",
+  "createdTime": "2021-05-19T09:28:24Z",
+  "executionStatus": "SUCCESS",
+  "request": {
+    "errorCode": "1.5e3b5b68.1621415935.409841",
+    "traceForwardLogs": true
+  },
+  "requestId": 345,
+  "result": {
+    "cacheKeyHostname": "example.com",
+    "clientIp": {
+      "ip": "192.0.2.9",
+      "ipLocation": {
+        "asNumber": 9583,
+        "city": "BANGALORE",
+        "countryCode": "IN",
+        "regionCode": "KA"
+      }
+    },
+    "clientRequestMethod": "GET",
+    "connectingIp": {
+      "ip": "192.0.2.9",
+      "ipLocation": {
+        "asNumber": 9583,
+        "city": "BANGALORE",
+        "countryCode": "IN",
+        "regionCode": "KA"
+      }
+    },
+    "cpCode": 1234567,
+    "date": "2021-05-19T09:28:24+0000",
+    "edgeServerIp": {
+      "ip": "192.0.2.9",
+      "ipLocation": {
+        "asNumber": 9583,
+        "city": "BANGALORE",
+        "countryCode": "IN",
+        "regionCode": "KA"
+      }
+    },
+    "epochTime": 1621415934,
+    "grepUrl": "/edge-diagnostics/v1/grep?edgeIp=192.0.2.9&cpCode=1234567&httpStatusCode=504&userAgent=Mozilla/5.0%20(Macintosh;%20Intel%20Mac%20OS%20X%2010_15_7)%20AppleWebKit/537.36%20(KHTML,%20like%20Gecko)%20Chrome/90.0.4430.212%20Safari/537.36&start=2021-05-19T09:23:24&end=2021-05-19T09:33:24Z&clientIp=192.0.2.9&arl=/D/1682/1234567/000/example.com./ERR_READ_TIMEOUT",
+    "httpResponseCode": 504,
+    "logLines": {
+      "legend": {
+        "fObjectStatus": {
+          "W": "The object TTL was set in response headers."
+        },
+        "fObjectStatus2": {},
+        "fObjectStatus3": {},
+        "logType": {
+          "f": "(f) going forward to forward hostname",
+          "r": "(r) response to client"
+        },
+        "rObjectStatus": {
+          "W": "The object TTL was set in response headers."
+        },
+        "rObjectStatus2": {
+          "N": "The request was processed over an anycast VIP and is marked as zero rated billing request.",
+          "o": "The origin server was contacted for the request.",
+          "x": "Either 'no-store' is turned on by metadata and not disabled by \"!no-store\" in the response or the downstream TTL was set by metadata and not by the response header."
+        },
+        "rObjectStatus3": {}
+      },
+      "logs": [
+        {
+          "arl": "/D/1682/1234567/000/example.com./ERR_READ_TIMEOUT",
+          "bytesReceived": "-",
+          "bytesServed": "568",
+          "clientIp": "192.0.2.6",
+          "contentBytesServed": "250",
+          "contentType": "text/html",
+          "cookie": "-",
+          "cpCode": "1234567",
+          "dateTime": "2021-08-24T10:14:09.306Z",
+          "edgeIp": "192.0.2.10",
+          "error": "ERR_READ_TIMEOUT|before_resp_hdrs",
+          "forwardIp": "-",
+          "hostHeader": "etranslator.edgesuite.net",
+          "httpMethod": "GET",
+          "httpStatus": "504",
+          "logType": "r",
+          "objectSize": "250",
+          "objectStatus": "W",
+          "objectStatus2": "xNo",
+          "objectStatus3": "-",
+          "referer": "-",
+          "sslVersion": "TLSv1.2",
+          "timeTaken": "0",
+          "turnaroundTime": "598",
+          "userAgent": "Mozilla/5.0%20(Macintosh;%20Intel%20Mac%20OS%20X%2010_15_7)%20AppleWebKit/537.36%20(KHTML,%20like%20Gecko)%20Chrome/92.0.4515.159%20Safari/537.36"
+        },
+        {
+          "arl": "/D/1682/1234567/000/example.com./ERR_READ_TIMEOUT",
+          "bytesReceived": "0",
+          "bytesServed": "-",
+          "clientIp": "192.0.2.6",
+          "contentBytesServed": "-",
+          "contentType": "-",
+          "cookie": "-",
+          "cpCode": "1234567",
+          "dateTime": "2021-08-24T10:14:09.356Z",
+          "edgeIp": "192.0.2.10",
+          "error": "-",
+          "forwardIp": "192.0.2.11",
+          "hostHeader": "-",
+          "httpMethod": "GET",
+          "httpStatus": "0",
+          "logType": "f",
+          "objectSize": "-",
+          "objectStatus": "W",
+          "objectStatus2": "-",
+          "objectStatus3": "-",
+          "referer": "-",
+          "sslVersion": "TLSv1.2",
+          "timeTaken": "0",
+          "turnaroundTime": "0",
+          "userAgent": "-"
+        }
+      ]
+    },
+    "originIp": {
+      "ip": "192.0.2.9",
+      "ipLocation": {
+        "asNumber": 9583,
+        "city": "BANGALORE",
+        "countryCode": "IN",
+        "regionCode": "KA"
+      }
+    },
+    "propertyName": "esi-examples.akamai.com_pm",
+    "propertyUrl": "/apps/property-manager/#/property?gid=18385&aid=164879",
+    "reasonForFailure": "The forward connection to the origin server from the edge server timed out.",
+    "url": "https://etranslator.edgesuite.net/ERR_READ_TIMEOUT",
+    "userAgent": "Mozilla/5.0%20(Macintosh;%20Intel%20Mac%20OS%20X%2010_15_7)%20AppleWebKit/537.36%20(KHTML,%20like%20Gecko)%20Chrome/90.0.4430.212%20Safari/537.36",
+    "wafDetails": "-",
+    "wafDetailsUrl": "/apps/security-config/#/next/configs/29531/versions/239/policies/RHBM_81115",
+    "wsaUrl": "/apps/securitycenter/#/web-security-analytics?cid=58847&startTime=1647510549925&endTime=1647511149925&dim=%5B%22trans.url%22%5D&filters=%5B%5B%22in%22%2C%22trans.ipXff%22%2C%5B%22192.0.2.9%22%5D%2Ctrue%5D%2C%5B%22in%22%2C%22trans.ip%22%2C%5B%22192.0.2.8%22%5D%2Ctrue%5D%2C%5B%22in%22%2C%22trans.statusCode%22%2C%5B%22100%22%5D%2Ctrue%5D%2C%5B%22in%22%2C%22trans.policyId%22%2C%5B%22waf%22%5D%2Ctrue%5D%5D"
+  },
+  "suggestedActions": [
+    "Check for long times.",
+    "Check content length/bytes served."
+  ]
+}
