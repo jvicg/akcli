@@ -15,8 +15,9 @@ from collections import defaultdict
 from contextlib import contextmanager
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from pathlib import Path
 from time import sleep
-from typing import IO, Any, Callable, Dict, Generator, Literal, Type, TypeVar
+from typing import Any, Callable, Dict, Generator, Literal, Type
 from urllib.parse import urlparse
 
 from .constants import (
@@ -25,24 +26,34 @@ from .constants import (
     CLIENT_TOKEN,
     DIG_NO_RECORDS_RESPONSE,
     DIG_SUCCESS_RESPONSE,
+    DIG_TIMEOUT_HOSTNAME,
+    DIG_VALID_HOSTNAME,
     PRIV_KEY,
+    TRANSLATE_30X_CODES_RESPONSE,
+    TRANSLATE_30X_ID,
+    TRANSLATE_BAD_REQUEST_ID,
+    TRANSLATE_NO_LOGS_RESPONSE,
+    TRANSLATE_NON_30X_CODES_RESPONSE,
+    TRANSLATE_NON_30X_ID,
+    TRANSLATE_PENDING_30X_RESPONSE,
+    TRANSLATE_PENDING_NO_LOGS_RESPONSE,
+    TRANSLATE_PENDING_NON_30X_RESPONSE,
 )
 
 _StatusCode = Literal[HTTPStatus.OK, HTTPStatus.UNAUTHORIZED, HTTPStatus.FORBIDDEN]
 
 
-def _parse_json_file_into_bytes(f: IO) -> bytes:
+def _parse_file_into_bytes(path: Path) -> bytes:
     """
     Helper function to read a JSON file and return its content as bytes.
     """
-    return json.dumps(json.load(f)).encode("utf-8")
+    with path.open("r") as f:
+        return json.dumps(json.load(f)).encode("utf-8")
 
 
 # -----------------------
 # Requests Handler
 # -----------------------
-
-_T = TypeVar("_T", bound="_HTTPRequestHandler")
 
 
 class _HTTPRequestHandler(BaseHTTPRequestHandler):
@@ -53,7 +64,9 @@ class _HTTPRequestHandler(BaseHTTPRequestHandler):
     handlers = defaultdict(dict)
 
     @classmethod
-    def endpoint(cls: Type[_T], method: str, endpoint: str) -> Callable[..., Any]:
+    def endpoint(
+        cls: Type["_HTTPRequestHandler"], method: str, endpoint: str
+    ) -> Callable[..., Any]:
         """
         Decorator to register a handler function for a specific HTTP method and endpoint.
         The function will be stored in the `handlers` dictionary with method and endpoint as keys.
@@ -65,14 +78,20 @@ class _HTTPRequestHandler(BaseHTTPRequestHandler):
 
         return wrapper
 
+    def _resolve_handler(self) -> Callable[..., Any]:
+        """
+        Resolve the handler function based on the request method and path.
+        """
+        endpoint = urlparse(self.path).path
+        method = self.command
+        return self.handlers[method].get(endpoint)  # type: ignore
+
     def _do_generic(self) -> Any:
         """
         Generic handler for all HTTP methods.
         It will use the function stored in the `handlers` dictionary to process the request.
         """
-        endpoint = urlparse(self.path).path
-        method = self.command
-        func = self.handlers[method].get(endpoint)
+        func = self._resolve_handler()
 
         if func is None:
             return self.send_error(HTTPStatus.NOT_FOUND)
@@ -91,7 +110,7 @@ class _HTTPRequestHandler(BaseHTTPRequestHandler):
 
     def _parse_auth_header(self, auth: str) -> Dict[str, str]:
         """
-        Parse EdgeGrid Authorization header token into a dictionary.
+        Parse EdgeGrid Authorization header into a dictionary.
         Example return: {"access_token": "value", "client_token": "value"}
         """
         parts = auth.replace("EG1-HMAC-SHA256", "").strip().split(";")
@@ -156,6 +175,12 @@ class _HTTPRequestHandler(BaseHTTPRequestHandler):
         """
         self._send_generic(HTTPStatus.OK, data)
 
+    def send_bad_request(self) -> None:
+        """
+        Return a 400 Bad Request response.
+        """
+        self._send_generic(HTTPStatus.BAD_REQUEST, b'{"error": "bad request"}')
+
     def send_forbidden(self) -> None:
         """
         Return a 403 Forbidden response.
@@ -200,12 +225,13 @@ def dig_response(handler: _HTTPRequestHandler) -> None:
     Endpoint that simulates the `dig` API.
     """
     data = handler.get_post_data()
+    hostname = data.get("hostname", "")
 
-    if data.get("hostname") == "www.example.com":
+    if hostname == DIG_VALID_HOSTNAME:
         response_file = DIG_SUCCESS_RESPONSE
 
     # Simulate a delay to trigger a timeout in the client
-    elif data.get("hostname") == "force-timeout":
+    elif hostname == DIG_TIMEOUT_HOSTNAME:
         sleep(1.5)
         return
 
@@ -213,10 +239,67 @@ def dig_response(handler: _HTTPRequestHandler) -> None:
     else:
         response_file = DIG_NO_RECORDS_RESPONSE
 
-    with response_file.open("r") as f:
-        data = _parse_json_file_into_bytes(f)
+    sent_data = _parse_file_into_bytes(response_file)
 
-    return handler.send_ok(data)
+    return handler.send_ok(sent_data)
+
+
+@_HTTPRequestHandler.endpoint("POST", "/edge-diagnostics/v1/error-translator")
+def post_translate_response(handler: _HTTPRequestHandler) -> None:
+    """
+    Endpoint that simulates the `translate` API.
+    This endpoint will always return a pending response to simulate the real endpoint behavior.
+    The response will indicate a link that has to be polled to get the actual translated logs.
+    """
+    data = handler.get_post_data()
+    error_code = data.get("errorCode", "")
+
+    if error_code == TRANSLATE_BAD_REQUEST_ID:
+        return handler.send_bad_request()
+
+    elif error_code == TRANSLATE_30X_ID:
+        sent_data = _parse_file_into_bytes(TRANSLATE_PENDING_30X_RESPONSE)
+
+    elif error_code == TRANSLATE_NON_30X_ID:
+        sent_data = _parse_file_into_bytes(TRANSLATE_PENDING_NON_30X_RESPONSE)
+
+    else:
+        sent_data = _parse_file_into_bytes(TRANSLATE_PENDING_NO_LOGS_RESPONSE)
+
+    return handler.send_ok(sent_data)
+
+
+@_HTTPRequestHandler.endpoint(
+    "GET", "/edge-diagnostics/v1/error-translator/requests/30x-response-id"
+)
+def get_translate_response_30x(handler: _HTTPRequestHandler) -> None:
+    """
+    Endpoint that simulates fetching the translated 30x codes.
+    """
+    sent_data = _parse_file_into_bytes(TRANSLATE_30X_CODES_RESPONSE)
+    return handler.send_ok(sent_data)
+
+
+@_HTTPRequestHandler.endpoint(
+    "GET", "/edge-diagnostics/v1/error-translator/requests/non-30x-response-id"
+)
+def get_translate_response_non_30x(handler: _HTTPRequestHandler) -> None:
+    """
+    Endpoint that simulates fetching the translated non-30x codes.
+    """
+    sent_data = _parse_file_into_bytes(TRANSLATE_NON_30X_CODES_RESPONSE)
+    return handler.send_ok(sent_data)
+
+
+@_HTTPRequestHandler.endpoint(
+    "GET", "/edge-diagnostics/v1/error-translator/requests/no-logs-response-id"
+)
+def get_translate_response_no_logs(handler: _HTTPRequestHandler) -> None:
+    """
+    Endpoint that simulates fetching when there are no logs available.
+    """
+    sent_data = _parse_file_into_bytes(TRANSLATE_NO_LOGS_RESPONSE)
+    return handler.send_ok(sent_data)
 
 
 # -----------------------
@@ -229,7 +312,7 @@ def run_https_server() -> Generator[HTTPServer, None, None]:
     """
     Context manager that starts and stops a simple HTTPS server.
     Use threading to run the server in the background to avoid blocking the tests execution
-    and dynamic port assignment preventing address conflicts.
+    and dynamic port assignment to prevent address conflicts.
     """
     server = HTTPServer(
         ("localhost", 0), _HTTPRequestHandler
