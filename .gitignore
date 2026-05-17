@@ -3,5 +3,6 @@
 !.vscode/
 !.gitignore
 *__pycache__*
+!.editorconfig
 !.python-version
 !.pre-commit-config.yaml
