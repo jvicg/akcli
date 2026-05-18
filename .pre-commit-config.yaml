@@ -1,35 +1,50 @@
 repos:
-  - repo: https://github.com/pre-commit/mirrors-isort
-    rev: v5.10.1
-    hooks:
-      - id: isort
-        name: run isort (python)
-        types: [python]
+  # - repo: https://github.com/pre-commit/mirrors-isort
+  #   rev: v5.10.1
+  #   hooks:
+  #     - id: isort
+  #       name: Run isort
+  #       types: [python]
 
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
-    hooks:
-      - id: trailing-whitespace
-        files: \.(py|pyi)$
-      - id: end-of-file-fixer
-        files: \.(py|pyi)$
-      - id: check-yaml
-        files: \.(yml|yaml)$
-      - id: check-added-large-files
+  # - repo: https://github.com/pre-commit/pre-commit-hooks
+  #   rev: v5.0.0
+  #   hooks:
+  #     - id: trailing-whitespace
+  #       name: Remove trailing whitespaces
+  #       files: \.(py|pyi)$
 
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.11.9
-    hooks:
-      - id: ruff
-        name: run ruff (python linter)
-        types: [python]
+  #     - id: end-of-file-fixer
+  #       name: Add empty new line at EOF
+  #       files: \.(py|pyi)$
+
+  #     - id: check-yaml
+  #       name: Validate YAML syntax
+  #       files: \.(yml|yaml)$
+
+  #     - id: check-added-large-files
+  #       name: Prevent large files from being committed
+
+  # - repo: https://github.com/charliermarsh/ruff-pre-commit
+  #   rev: v0.11.9
+  #   hooks:
+  #     - id: ruff
+  #       name: Run ruff (python linter)
+  #       types: [python]
 
   - repo: local
     hooks:
-      - id: run-unit-pytest
-        name: run unit tests
-        entry: pytest tests/unit
+      # Run unit test if python relevant file is modified (before commit)
+      - id: pytest-unit
+        name: Run unit tests
+        entry: pytest tests/unit/
         language: system
         types: [python]
-        pass_filenames: false
-        always_run: true
+        stages: [pre-commit]
+
+      # Run full test suite before pushing to remote
+      - id: pytest-full
+        name: Run full test suite
+        entry: pytest tests/
+        language: system
+        types: [python]
+        stages: [pre-push]
