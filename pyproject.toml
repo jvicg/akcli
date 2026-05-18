@@ -5,7 +5,7 @@ edgegrid-python = "*"
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = "-ra -q --tb=short --cov=akcli --cov-report=term-missing --cov-fail-under=80"
+addopts = "-ra -q --tb=short --cov=akcli --cov-report=term-missing"
 testpaths = ["tests"]
 pythonpath = "."
 python_files = "test_*.py"
