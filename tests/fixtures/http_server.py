@@ -17,7 +17,7 @@ from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from time import sleep
-from typing import Any, Callable, Dict, Generator, Literal, Type
+from typing import Any, Callable, ClassVar, Dict, Generator, Literal, Type
 from urllib.parse import urlparse
 
 from .constants import (
@@ -61,12 +61,10 @@ class _HTTPRequestHandler(BaseHTTPRequestHandler):
     Custom HTTP request handler.
     """
 
-    handlers = defaultdict(dict)
+    handlers: ClassVar = defaultdict(dict)
 
     @classmethod
-    def endpoint(
-        cls: Type["_HTTPRequestHandler"], method: str, endpoint: str
-    ) -> Callable[..., Any]:
+    def endpoint(cls: Type["_HTTPRequestHandler"], method: str, endpoint: str) -> Callable[..., Any]:
         """
         Decorator to register a handler function for a specific HTTP method and endpoint.
         The function will be stored in the `handlers` dictionary with method and endpoint as keys.
@@ -100,11 +98,7 @@ class _HTTPRequestHandler(BaseHTTPRequestHandler):
         status_code = self._validate_auth(ACCESS_TOKEN, CLIENT_TOKEN)
 
         if status_code != HTTPStatus.OK:
-            return (
-                self.send_unauthorized()
-                if status_code == HTTPStatus.UNAUTHORIZED
-                else self.send_forbidden()
-            )
+            return self.send_unauthorized() if status_code == HTTPStatus.UNAUTHORIZED else self.send_forbidden()
 
         return func(self)
 
@@ -133,10 +127,7 @@ class _HTTPRequestHandler(BaseHTTPRequestHandler):
 
         token = self._parse_auth_header(auth)
 
-        if (
-            token.get("client_token") != client_token
-            or token.get("access_token") != access_token
-        ):
+        if token.get("client_token") != client_token or token.get("access_token") != access_token:
             return HTTPStatus.FORBIDDEN
 
         return HTTPStatus.OK
@@ -269,9 +260,7 @@ def post_translate_response(handler: _HTTPRequestHandler) -> None:
     return handler.send_ok(sent_data)
 
 
-@_HTTPRequestHandler.endpoint(
-    "GET", "/edge-diagnostics/v1/error-translator/requests/30x-response-id"
-)
+@_HTTPRequestHandler.endpoint("GET", "/edge-diagnostics/v1/error-translator/requests/30x-response-id")
 def get_translate_response_30x(handler: _HTTPRequestHandler) -> None:
     """
     Endpoint that simulates fetching the translated 30x codes.
@@ -280,9 +269,7 @@ def get_translate_response_30x(handler: _HTTPRequestHandler) -> None:
     return handler.send_ok(sent_data)
 
 
-@_HTTPRequestHandler.endpoint(
-    "GET", "/edge-diagnostics/v1/error-translator/requests/non-30x-response-id"
-)
+@_HTTPRequestHandler.endpoint("GET", "/edge-diagnostics/v1/error-translator/requests/non-30x-response-id")
 def get_translate_response_non_30x(handler: _HTTPRequestHandler) -> None:
     """
     Endpoint that simulates fetching the translated non-30x codes.
@@ -291,9 +278,7 @@ def get_translate_response_non_30x(handler: _HTTPRequestHandler) -> None:
     return handler.send_ok(sent_data)
 
 
-@_HTTPRequestHandler.endpoint(
-    "GET", "/edge-diagnostics/v1/error-translator/requests/no-logs-response-id"
-)
+@_HTTPRequestHandler.endpoint("GET", "/edge-diagnostics/v1/error-translator/requests/no-logs-response-id")
 def get_translate_response_no_logs(handler: _HTTPRequestHandler) -> None:
     """
     Endpoint that simulates fetching when there are no logs available.
@@ -314,9 +299,7 @@ def run_https_server() -> Generator[HTTPServer, None, None]:
     Use threading to run the server in the background to avoid blocking the tests execution
     and dynamic port assignment to prevent address conflicts.
     """
-    server = HTTPServer(
-        ("localhost", 0), _HTTPRequestHandler
-    )  # Set port to 0 for dynamic assignment
+    server = HTTPServer(("localhost", 0), _HTTPRequestHandler)  # Set port to 0 for dynamic assignment
 
     # Wrap socket with SSL
     context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
