@@ -1328,7 +1328,7 @@ files = [
     {file = "tomli-2.4.1-py3-none-any.whl", hash = "sha256:0d85819802132122da43cb86656f8d1f8c6587d54ae7dcaf30e90533028b49fe"},
     {file = "tomli-2.4.1.tar.gz", hash = "sha256:7c7e1a961a0b2f2472c1ac5b69affa0ae1132c39adcb67aba98568702b9cc23f"},
 ]
-markers = {main = "python_version < \"3.11\"", dev = "python_full_version <= \"3.11.0a6\""}
+markers = {dev = "python_full_version <= \"3.11.0a6\""}
 
 [[package]]
 name = "tomli-w"
@@ -1451,4 +1451,4 @@ typing-extensions = {version = ">=4.13.2", markers = "python_version < \"3.11\""
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<3.14"
-content-hash = "71c257301188fe9d483c6d8b3b97fc8a0de662f41eecfb1fa01b7e3cfc828d6c"
+content-hash = "e9fb4bcfe2d44dda17a643f974f9567ec5d288e883f1834e44c4939402f43cb2"
