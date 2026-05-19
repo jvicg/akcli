@@ -82,11 +82,11 @@ class Cache:
             self._cache_file.write_text("{}", encoding="utf-8")
 
     def _load_cache(self) -> CacheDB:
-        with open(self._cache_file, "r", encoding="utf-8") as f:
+        with self._cache_file.open("r", encoding="utf-8") as f:
             return json.load(f)
 
     def _save_cache(self, data: CacheDB) -> None:
-        with open(self._cache_file, "w", encoding="utf-8") as f:
+        with self._cache_file.open("w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
 
     def _cleanup(self, cache_db: CacheDB) -> None:
