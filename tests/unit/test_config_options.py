@@ -47,9 +47,7 @@ def path_relative_value():
 
 
 @pytest.fixture
-def dummy_options(
-    str_value, int_value, bool_value, path_value, path_str_value, path_relative_value
-):
+def dummy_options(str_value, int_value, bool_value, path_value, path_str_value, path_relative_value):
     """
     Fixture that provides a dummy options dataclass for testing.
     """
@@ -83,7 +81,7 @@ def test_iter_return_all_values(
     """
     Test that the dummy options dataclass can be iterated over its fields and values.
     """
-    keys = {k: v for k, v in dummy_options}
+    keys = dict(dummy_options)
     assert keys == {
         "option_str": str_value,
         "option_int": int_value,
