@@ -229,7 +229,7 @@ class Config:
         while True:
             try:
                 return cls(**data_copy)
-            except TypeError as e:
+            except TypeError as e:  # noqa: PERF203
                 key = self._extract_invalid_key(e)
                 warnings.warn(
                     f"Ignoring invalid config option '{highlight(key)}' in '{name}'.",
