@@ -82,20 +82,18 @@ class Cache:
             self._cache_file.write_text("{}", encoding="utf-8")
 
     def _load_cache(self) -> CacheDB:
-        with open(self._cache_file, "r", encoding="utf-8") as f:
+        with self._cache_file.open("r", encoding="utf-8") as f:
             return json.load(f)
 
     def _save_cache(self, data: CacheDB) -> None:
-        with open(self._cache_file, "w", encoding="utf-8") as f:
+        with self._cache_file.open("w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
 
     def _cleanup(self, cache_db: CacheDB) -> None:
         """
         Remove expired items from the cache.
         """
-        expired_keys = [
-            k for k, v in cache_db.items() if _CacheItem.from_dict(v).is_expired
-        ]
+        expired_keys = [k for k, v in cache_db.items() if _CacheItem.from_dict(v).is_expired]
 
         for key in expired_keys:
             del cache_db[key]
@@ -137,9 +135,7 @@ class Cache:
         cache_db.pop(key, None)
         self._save_cache(cache_db)
 
-    def generate_key(
-        self, method: str, endpoint: str, payload: Optional[Payload]
-    ) -> str:
+    def generate_key(self, method: str, endpoint: str, payload: Optional[Payload]) -> str:
         """
         Generate the cache key based on the request method, endpoint and payload.
         """
@@ -159,11 +155,9 @@ def cached(func: GenericFunction) -> GenericFunction:
     """
 
     @wraps(func)
-    def wrapper(
-        self, method: str, endpoint: str, *args: Any, **kwargs: Any
-    ) -> SerializedCacheItem:
+    def wrapper(self, method: str, endpoint: str, *args: Any, **kwargs: Any) -> SerializedCacheItem:
         payload = kwargs.get("json")
-        cache: Cache = getattr(self, "_cache")
+        cache: Cache = self._cache
         key = cache.generate_key(method, endpoint, payload)
 
         cached = cache.get(key)
@@ -171,7 +165,7 @@ def cached(func: GenericFunction) -> GenericFunction:
             return cached.data
 
         # If not cached, make request to API and store result
-        data = func(self, method=method, endpoint=endpoint, *args, **kwargs)
+        data = func(self, *args, method=method, endpoint=endpoint, **kwargs)
         cache_item = _CacheItem(key, data, cache.ttl)
         cache.set(cache_item)
 

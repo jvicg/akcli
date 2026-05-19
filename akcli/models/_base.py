@@ -15,9 +15,9 @@ from typing import Optional, Type, TypeVar
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic_core import ValidationError
 
-from ..exceptions import InvalidResponse
-from ..typing import JSONResponse
-from ..utils import snakecase_to_camel
+from akcli.exceptions import InvalidResponse
+from akcli.typing import JSONResponse
+from akcli.utils import snakecase_to_camel
 
 # ----------------------
 # Base Model
@@ -34,9 +34,7 @@ class BaseAPIModel(BaseModel):
     responses return values with camel case.
     """
 
-    model_config = ConfigDict(
-        alias_generator=snakecase_to_camel, validate_by_name=True, extra="ignore"
-    )
+    model_config = ConfigDict(alias_generator=snakecase_to_camel, validate_by_name=True, extra="ignore")
 
     @classmethod
     def parse_model(cls: Type[_T], data: JSONResponse) -> _T:
@@ -46,7 +44,7 @@ class BaseAPIModel(BaseModel):
         try:
             return cls.model_validate(data)
         except ValidationError as e:
-            raise InvalidResponse(f"Unable to parse API response: {e}")
+            raise InvalidResponse(f"Unable to parse API response: {e}") from e
 
 
 # ----------------------

@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
 """
-Module that exposes the model `TranslateReponse` which defines the API response to the endpoint: /edge-diagnostics/v1/error-translator
-Some of the response objects are not defined in this module so will be ignored, since they're not considered useful.
+Module that exposes the model `TranslateReponse` which defines the API response
+to the endpoint: /edge-diagnostics/v1/error-translator.
+
+Some of the response objects are not defined in this module, since they're not considered useful and will be ignored
 Reference: https://techdocs.akamai.com/edge-diagnostics/reference/post-error-translator
 
 Generated with `datamodel-code-generator` (https://github.com/koxudaxi/datamodel-code-generator)
@@ -63,9 +65,7 @@ class CertificateErrorDetails(BaseAPIModel):
 
 class Result(BaseAPIModel):
     cache_key_hostname: Optional[str] = None
-    certificate_error_details: CertificateErrorDetails = Field(
-        default_factory=CertificateErrorDetails
-    )
+    certificate_error_details: CertificateErrorDetails = Field(default_factory=CertificateErrorDetails)
     client_ip: IpType = Field(default_factory=IpType)
     client_request_method: Optional[str] = None
     connecting_ip: IpType = Field(default_factory=IpType, title="Connecting IP.")

@@ -10,10 +10,10 @@ from enum import Enum
 import typer
 from typing_extensions import Annotated
 
-from ..config import Config
-from ..exceptions import DigNoAnswerWarning, MutuallyExclusiveArgs, handle_exceptions
-from ..utils import create_table, highlight, print_json
-from ._common import common_args
+from akcli.commands._common import common_args
+from akcli.config import Config
+from akcli.exceptions import DigNoAnswerWarning, MutuallyExclusiveArgs, handle_exceptions
+from akcli.utils import create_table, highlight, print_json
 
 _COMMAND_NAME = "dig"
 
@@ -57,16 +57,12 @@ class _DNSType(str, Enum):
 def dig(
     ctx: typer.Context,
     hostname: Annotated[str, typer.Argument(help="Hostname to query.")],
-    query_type: Annotated[
-        _DNSType, typer.Option(help="Choose type of query.")
-    ] = config.query_type,  # type: ignore
+    query_type: Annotated[_DNSType, typer.Option(help="Choose type of query.")] = config.query_type,  # type: ignore
     raw: Annotated[
         bool,
         typer.Option(help="Print dig raw response (just like regular `dig` command)."),
     ] = config.raw,
-    short: Annotated[
-        bool, typer.Option(help="Show only returned values.")
-    ] = config.short_output,
+    short: Annotated[bool, typer.Option(help="Show only returned values.")] = config.short_output,
 ) -> None:
     """
     Tool to resolve domains FQDNs using Akamai Edge Diagnostics API.
@@ -82,9 +78,7 @@ def dig(
     answer_section = response.result.answer_section
 
     if not answer_section:
-        warnings.warn(
-            f"No register matches the query: {highlight(hostname)}", DigNoAnswerWarning
-        )
+        warnings.warn(f"No register matches the query: {highlight(hostname)}", DigNoAnswerWarning, stacklevel=2)
         raise typer.Exit()
 
     if raw:
