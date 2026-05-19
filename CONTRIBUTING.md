@@ -82,13 +82,14 @@ This project uses [pre-commit](https://pre-commit.com/) to enforce code quality 
 
 2. **Install the hooks**:
     ```bash
-    pre-commit install --hook-type pre-commit --hook-type pre-push
+    pre-commit install --install-hooks
     ```
 
 Once installed, the following checks will run automatically:
 
 | Stage      | Hook                      | Description                                   |
 | ---------- | ------------------------- | --------------------------------------------- |
+| commit-msg | `conventional-pre-commit` | Enforces Conventional Commits format          |
 | pre-commit | `trailing-whitespace`     | Removes trailing whitespace from Python files |
 | pre-commit | `end-of-file-fixer`       | Ensures all Python files end with a newline   |
 | pre-commit | `check-yaml`              | Validates YAML file syntax                    |
