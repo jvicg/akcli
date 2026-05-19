@@ -1,35 +1,28 @@
 repos:
-  # - repo: https://github.com/pre-commit/mirrors-isort
-  #   rev: v5.10.1
-  #   hooks:
-  #     - id: isort
-  #       name: Run isort
-  #       types: [python]
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        name: Remove trailing whitespaces
+        files: \.(py|pyi)$
 
-  # - repo: https://github.com/pre-commit/pre-commit-hooks
-  #   rev: v5.0.0
-  #   hooks:
-  #     - id: trailing-whitespace
-  #       name: Remove trailing whitespaces
-  #       files: \.(py|pyi)$
+      - id: end-of-file-fixer
+        name: Add empty new line at EOF
+        files: \.(py|pyi)$
 
-  #     - id: end-of-file-fixer
-  #       name: Add empty new line at EOF
-  #       files: \.(py|pyi)$
+      - id: check-yaml
+        name: Validate YAML syntax
+        files: \.(yml|yaml)$
 
-  #     - id: check-yaml
-  #       name: Validate YAML syntax
-  #       files: \.(yml|yaml)$
+      - id: check-added-large-files
+        name: Prevent large files from being committed
 
-  #     - id: check-added-large-files
-  #       name: Prevent large files from being committed
-
-  # - repo: https://github.com/charliermarsh/ruff-pre-commit
-  #   rev: v0.11.9
-  #   hooks:
-  #     - id: ruff
-  #       name: Run ruff (python linter)
-  #       types: [python]
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.14.7
+    hooks:
+      - id: ruff-check
+        name: Run ruff (python linter)
+        types: [python]
 
   - repo: local
     hooks:
