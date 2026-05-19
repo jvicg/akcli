@@ -246,16 +246,16 @@ def handle_exceptions(
                 print_error(_console, e.msg)
                 e.exit()
 
-            except KeyboardInterrupt:
+            except KeyboardInterrupt as e:
                 print_error(_console, "Operation cancelled by user.")
-                raise typer.Exit(ERR_KEYBOARD_INTERRUPT)
+                raise typer.Exit(ERR_KEYBOARD_INTERRUPT) from e
 
             except typer.Exit:
                 raise
 
             except Exception as e:
                 print_error(_console, f"Unexpected error: {e}")
-                raise typer.Exit(ERR_UNEXPECTED)
+                raise typer.Exit(ERR_UNEXPECTED) from e
 
         return wrapper  # type: ignore
 

@@ -34,9 +34,7 @@ class BaseAPIModel(BaseModel):
     responses return values with camel case.
     """
 
-    model_config = ConfigDict(
-        alias_generator=snakecase_to_camel, validate_by_name=True, extra="ignore"
-    )
+    model_config = ConfigDict(alias_generator=snakecase_to_camel, validate_by_name=True, extra="ignore")
 
     @classmethod
     def parse_model(cls: Type[_T], data: JSONResponse) -> _T:
@@ -46,7 +44,7 @@ class BaseAPIModel(BaseModel):
         try:
             return cls.model_validate(data)
         except ValidationError as e:
-            raise InvalidResponse(f"Unable to parse API response: {e}")
+            raise InvalidResponse(f"Unable to parse API response: {e}") from e
 
 
 # ----------------------

@@ -120,10 +120,10 @@ class AkamaiAPI:
         try:
             return "https://" + self._edgerc_obj.get(self._section, "host")
 
-        except NoSectionError:
+        except NoSectionError as e:
             raise InvalidEdgeRcSection(
                 f"The section '{highlight(self._section)}' was not found in EdgeGrid file: {self._edgerc_path!s}."
-            )
+            ) from e
 
     def _build_base_headers(self) -> Headers:
         """
@@ -155,42 +155,42 @@ class AkamaiAPI:
             res.raise_for_status()
             return res.json()
 
-        except requests.exceptions.HTTPError:
+        except requests.exceptions.HTTPError as e:
             if res is not None:
                 if res.status_code == 400:
                     error_body = json.dumps(res.json(), indent=2)
-                    raise BadRequest(f"API returned BadRequest response: \n\n{error_body}")
+                    raise BadRequest(f"API returned BadRequest response: \n\n{error_body}") from e
                 elif res.status_code in (401, 403):
                     raise InvalidCredentials(
                         "Unable to authenticate with the Akamai API. "
                         f"Check EdgeGrid file: {highlight(str(self._edgerc_path))}."
-                    )
+                    ) from e
                 elif res.status_code == 404:
-                    raise ResourceNotFound(f"The endpoint '{highlight(endpoint)}' was not found on the server.")
+                    raise ResourceNotFound(f"The endpoint '{highlight(endpoint)}' was not found on the server.") from e
                 elif res.status_code == 405:
                     raise MethodNotAllowed(
                         f"The method '{highlight(method)}' is not allowed for the endpoint '{highlight(endpoint)}'."
-                    )
+                    ) from e
                 elif res.status_code == 429:
-                    raise TooManyRequests("Too many requests. You have been rate limited by the API.")
+                    raise TooManyRequests("Too many requests. You have been rate limited by the API.") from e
                 else:
                     error_body = json.dumps(res.json(), indent=2)
-                    raise RequestError(f"Unhandled HTTP {res.status_code} error: \n\n{error_body}")
+                    raise RequestError(f"Unhandled HTTP {res.status_code} error: \n\n{error_body}") from e
 
             # In case `res` is None, re-raise the exception
             raise
 
-        except requests.exceptions.Timeout:
-            raise RequestTimeout(f"The request timed out after {highlight(str(self._timeout))} seconds.")
+        except requests.exceptions.Timeout as e:
+            raise RequestTimeout(f"The request timed out after {highlight(str(self._timeout))} seconds.") from e
 
         except requests.exceptions.SSLError as e:
-            raise RequestSSLError(f"An SSL error occurred while connecting to the API: {e}")
+            raise RequestSSLError(f"An SSL error occurred while connecting to the API: {e}") from e
 
-        except requests.exceptions.ProxyError:
-            raise RequestProxyError(f"Unable to connect to proxy {highlight(self._session.proxies['http'])}")
+        except requests.exceptions.ProxyError as e:
+            raise RequestProxyError(f"Unable to connect to proxy {highlight(self._session.proxies['http'])}") from e
 
         except Exception as e:
-            raise RequestError(f"An error occurred while making the request: {e}")
+            raise RequestError(f"An error occurred while making the request: {e}") from e
 
     def _get(self, endpoint: str, headers: Optional[Headers] = None) -> JSONResponse:
         """
