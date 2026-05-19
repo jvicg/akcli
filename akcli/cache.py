@@ -93,9 +93,7 @@ class Cache:
         """
         Remove expired items from the cache.
         """
-        expired_keys = [
-            k for k, v in cache_db.items() if _CacheItem.from_dict(v).is_expired
-        ]
+        expired_keys = [k for k, v in cache_db.items() if _CacheItem.from_dict(v).is_expired]
 
         for key in expired_keys:
             del cache_db[key]
@@ -137,9 +135,7 @@ class Cache:
         cache_db.pop(key, None)
         self._save_cache(cache_db)
 
-    def generate_key(
-        self, method: str, endpoint: str, payload: Optional[Payload]
-    ) -> str:
+    def generate_key(self, method: str, endpoint: str, payload: Optional[Payload]) -> str:
         """
         Generate the cache key based on the request method, endpoint and payload.
         """
@@ -159,11 +155,9 @@ def cached(func: GenericFunction) -> GenericFunction:
     """
 
     @wraps(func)
-    def wrapper(
-        self, method: str, endpoint: str, *args: Any, **kwargs: Any
-    ) -> SerializedCacheItem:
+    def wrapper(self, method: str, endpoint: str, *args: Any, **kwargs: Any) -> SerializedCacheItem:
         payload = kwargs.get("json")
-        cache: Cache = getattr(self, "_cache")
+        cache: Cache = self._cache
         key = cache.generate_key(method, endpoint, payload)
 
         cached = cache.get(key)
@@ -171,7 +165,7 @@ def cached(func: GenericFunction) -> GenericFunction:
             return cached.data
 
         # If not cached, make request to API and store result
-        data = func(self, method=method, endpoint=endpoint, *args, **kwargs)
+        data = func(self, *args, method=method, endpoint=endpoint, **kwargs)
         cache_item = _CacheItem(key, data, cache.ttl)
         cache.set(cache_item)
 
