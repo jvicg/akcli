@@ -33,7 +33,7 @@ pytest-cov = "^7.1"
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = "-ra -q --tb=short --cov=akcli --cov-report=term-missing"
+addopts = "-ra -q --tb=short --cov=akcli --cov-report=term-missing --import-mode importlib"
 testpaths = ["tests"]
 pythonpath = "."
 python_files = "test_*.py"
