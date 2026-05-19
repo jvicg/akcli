@@ -1,4 +1,4 @@
-# Contributing 
+# Contributing
 
 First off, thank you for considering contributing to our project! Your support and involvement are greatly appreciated.
 
@@ -6,13 +6,14 @@ First off, thank you for considering contributing to our project! Your support a
 
 - [Code of Conduct](#code-of-conduct)
 - [How Can I Contribute?](#how-can-i-contribute)
-  - [Reporting Bugs](#reporting-bugs)
-  - [Suggesting Enhancements](#suggesting-enhancements)
-  - [Submitting Pull Requests](#submitting-pull-requests)
-- [Translations](#Translations)
+    - [Reporting Bugs](#reporting-bugs)
+    - [Suggesting Enhancements](#suggesting-enhancements)
+    - [Submitting Pull Requests](#submitting-pull-requests)
+- [Translations](#translations)
 - [Style Guides](#style-guides)
-  - [Coding Standards](#coding-standards)
-  - [Commit Messages](#commit-messages)
+    - [Coding Standards](#coding-standards)
+    - [Pre-commit Hooks](#pre-commit-hooks)
+    - [Commit Messages](#commit-messages)
 - [Additional Resources](#additional-resources)
 
 ## Code of Conduct
@@ -53,14 +54,13 @@ We aim to make this project accessible to a global audience. If you would like t
 
 1. **Check for Existing Translations**: Review the repository to see if a translation in your language already exists.
 2. **Open an Issue**: If no translation exists, open an issue to propose adding a new language. Please specify which language you plan to work on.
-3. **Create a Translation Folder**: 
-   - Create a folder for your language (e.g., `translations/es/` for Spanish) in the repository.
-   - Include translated files, ensuring they match the structure of the original files.
+3. **Create a Translation Folder**:
+    - Create a folder for your language (e.g., `translations/es/` for Spanish) in the repository.
+    - Include translated files, ensuring they match the structure of the original files.
 4. **Submit a Pull Request**: Follow the steps in [Submitting Pull Requests](#submitting-pull-requests) to add your translated content.
 5. **Work with Reviewers**: Collaborate with maintainers and native speakers to ensure accuracy and quality.
 
 If you need any assistance during the translation process, feel free to open an issue or reach out via discussions.
-
 
 ## Style Guides
 
@@ -70,16 +70,43 @@ If you need any assistance during the translation process, feel free to open an 
 - **Formatting**: Use consistent indentation and spacing.
 - **Comments**: Write clear and concise comments where necessary.
 
+### Pre-commit Hooks
+
+This project uses [pre-commit](https://pre-commit.com/) to enforce code quality automatically before each commit and push. Setting it up is required before submitting any pull request.
+
+1. **Install pre-commit**:
+
+    ```bash
+    pip install pre-commit
+    ```
+
+2. **Install the hooks**:
+    ```bash
+    pre-commit install --hook-type pre-commit --hook-type pre-push
+    ```
+
+Once installed, the following checks will run automatically:
+
+| Stage      | Hook                      | Description                                   |
+| ---------- | ------------------------- | --------------------------------------------- |
+| pre-commit | `trailing-whitespace`     | Removes trailing whitespace from Python files |
+| pre-commit | `end-of-file-fixer`       | Ensures all Python files end with a newline   |
+| pre-commit | `check-yaml`              | Validates YAML file syntax                    |
+| pre-commit | `check-added-large-files` | Prevents large files from being committed     |
+| pre-commit | `ruff`                    | Runs the linter and formatter                 |
+| pre-commit | `pytest (unit)`           | Runs the unit test suite                      |
+| pre-push   | `pytest (full)`           | Runs the full test suite                      |
+
 ### Commit Messages
 
 - **Format**: Use the present tense ("Add feature" not "Added feature").
 - **Description**: Provide a brief description of the changes made.
 - **Style guide**: Follow this style guide for commit messages:
 
-| Commit Type | Title                    | Description                                                                                                 | 
+| Commit Type | Title                    | Description                                                                                                 |
 | ----------- | ------------------------ | ----------------------------------------------------------------------------------------------------------- |
 | `feat`      | Features                 | A new feature                                                                                               |
-| `fix`       | Bug Fixes                | A bug Fix                                                                                                   |
+| `fix`       | Bug Fixes                | A bug fix                                                                                                   |
 | `docs`      | Documentation            | Documentation only changes                                                                                  |
 | `style`     | Styles                   | Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)      |
 | `refactor`  | Code Refactoring         | A code change that neither fixes a bug nor adds a feature                                                   |
