@@ -1,7 +1,31 @@
+[tool.poetry]
+name = "akcli"
+version = "0.1.0"
+description = "Command-line interface to make requests to Akamai API."
+authors = ["Javier Correa Guerrero <jcorreag@pm.me>"]
+license = "MIT"
+readme = "README.md"
+packages = [
+  { include = "akcli" }
+]
+
 [tool.poetry.dependencies]
 python = ">=3.9,<3.14"
-requests = ">=2.25.0"
-edgegrid-python = "*"
+requests = "^2.32"
+edgegrid-python = "^2.0"
+pydantic = "^2.12"
+typer = "^0.20"
+rich = "^14.2"
+tomli = { version = "^2.3", python = "<3.11" }
+tomli-w = "^1.2"
+merge-args = "^0.1"
+platformdirs = "^4.4"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "0.14.7"
+pre-commit = "^4.3"
+pytest = "^8.4"
+pytest-cov = "^7.1"
 
 [tool.pytest.ini_options]
 minversion = "7.0"
