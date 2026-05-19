@@ -172,7 +172,7 @@ class Config:
 
         # If the config file cannot be parsed, print a warning and return an empty dict
         except tomli.TOMLDecodeError as e:
-            warnings.warn(f"Error parsing config file: {e}", FileUnableToParseWarning)
+            warnings.warn(f"Error parsing config file: {e}", FileUnableToParseWarning, stacklevel=2)
             return {}
 
     def _get_section(self, section: str) -> SerializedOptions:
@@ -191,6 +191,7 @@ class Config:
                 warnings.warn(
                     f"Ignoring invalid config section '{highlight(section)}'.",
                     InvalidConfigSectionWarning,
+                    stacklevel=2,
                 )
 
     def _extract_invalid_key(self, e: TypeError) -> str:
@@ -216,14 +217,10 @@ class Config:
         This property is used by `_valid_sections`, `_init_options` and `init_config_file` methods.
         """
         hints = get_type_hints(self.__class__)
-        commands_map = {
-            name: typ for name, typ in hints.items() if issubclass(typ, _OptionsBase)
-        }
+        commands_map = {name: typ for name, typ in hints.items() if issubclass(typ, _OptionsBase)}
         return commands_map
 
-    def _init_single_command_opts(
-        self, name: str, cls: Type[_OptionsBase], data: SerializedOptions
-    ) -> _OptionsBase:
+    def _init_single_command_opts(self, name: str, cls: Type[_OptionsBase], data: SerializedOptions) -> _OptionsBase:
         """
         Initialize a single command options object ignoring invalid parameters in the config,
         and printing a warning with the invalid params.
@@ -237,6 +234,7 @@ class Config:
                 warnings.warn(
                     f"Ignoring invalid config option '{highlight(key)}' in '{name}'.",
                     InvalidOptionWarning,
+                    stacklevel=2,
                 )
                 data_copy.pop(key, None)
 
@@ -270,9 +268,7 @@ def _to_serializable_dict(obj: _OptionsBase) -> SerializedOptions:
     return d
 
 
-def init_config_file(
-    value: Optional[bool], console: Console, path: Path = _CONFIG_FILE_PATH
-) -> None:
+def init_config_file(value: Optional[bool], console: Console, path: Path = _CONFIG_FILE_PATH) -> None:
     """
     Generate a default configuration file and exit program.
     """
@@ -283,10 +279,7 @@ def init_config_file(
 
     # Initilialize config and build default config dict
     config = Config()
-    default_config = {
-        name: _to_serializable_dict(cls())
-        for name, cls in config.commands_name_class_map.items()
-    }
+    default_config = {name: _to_serializable_dict(cls()) for name, cls in config.commands_name_class_map.items()}
 
     # Ask for confirmation in case config file already exists
     if path.exists():
@@ -305,6 +298,7 @@ def init_config_file(
         warnings.warn(
             f"Unable to generate the configuration file at {highlighted_path}",
             UnableToGenerateConfigWarning,
+            stacklevel=2,
         )
 
     raise typer.Exit()

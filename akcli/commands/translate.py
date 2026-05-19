@@ -60,9 +60,7 @@ def _build_table_recursive(table: Table, obj: Any, title: Optional[str] = None) 
     for key, value in obj.items():
         formatted_key = snakecase_to_title(key)
         # If title is None, we're in first level, so pass table instead of subtable
-        _build_table_recursive(
-            table if title is None else subtable, value, formatted_key
-        )
+        _build_table_recursive(table if title is None else subtable, value, formatted_key)
 
     if title is not None:
         table.add_row(title, subtable)
@@ -79,9 +77,7 @@ def translate(
     ],
     trace: Annotated[
         bool,
-        typer.Option(
-            help="Get logs from all edge servers involved to process in serving the request."
-        ),
+        typer.Option(help="Get logs from all edge servers involved to process in serving the request."),
     ] = config.trace,
 ) -> None:
     """
@@ -95,8 +91,7 @@ def translate(
 
     if result.no_logs:
         warnings.warn(
-            f"Not found any logs that matches the Reference ID: {highlight(id)}",
-            TranslateNoLogsWarning,
+            f"Not found any logs that matches the Reference ID: {highlight(id)}", TranslateNoLogsWarning, stacklevel=2
         )
 
         raise typer.Exit()
