@@ -1,6 +1,8 @@
 .*
+dist/
 !.github/
 !.vscode/
+*.egg-info/
 !.gitignore
 *__pycache__*
 !.editorconfig
