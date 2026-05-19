@@ -11,16 +11,16 @@ import typer
 from rich.table import Table
 from typing_extensions import Annotated
 
-from ..config import Config
-from ..exceptions import TranslateNoLogsWarning, handle_exceptions
-from ..typing import TableParams
-from ..utils import (
+from akcli.commands._common import common_args
+from akcli.config import Config
+from akcli.exceptions import TranslateNoLogsWarning, handle_exceptions
+from akcli.typing import TableParams
+from akcli.utils import (
     create_table,
     highlight,
     print_json,
     snakecase_to_title,
 )
-from ._common import common_args
 
 _COMMAND_NAME = "translate"
 

@@ -15,9 +15,9 @@ from typing import Optional, Type, TypeVar
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic_core import ValidationError
 
-from ..exceptions import InvalidResponse
-from ..typing import JSONResponse
-from ..utils import snakecase_to_camel
+from akcli.exceptions import InvalidResponse
+from akcli.typing import JSONResponse
+from akcli.utils import snakecase_to_camel
 
 # ----------------------
 # Base Model

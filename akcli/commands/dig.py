@@ -10,10 +10,10 @@ from enum import Enum
 import typer
 from typing_extensions import Annotated
 
-from ..config import Config
-from ..exceptions import DigNoAnswerWarning, MutuallyExclusiveArgs, handle_exceptions
-from ..utils import create_table, highlight, print_json
-from ._common import common_args
+from akcli.commands._common import common_args
+from akcli.config import Config
+from akcli.exceptions import DigNoAnswerWarning, MutuallyExclusiveArgs, handle_exceptions
+from akcli.utils import create_table, highlight, print_json
 
 _COMMAND_NAME = "dig"
 
