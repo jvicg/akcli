@@ -48,7 +48,8 @@ def dummy_model():
 
 def test_initialization_with_valid_data(dummy_model, valid_data):
     """
-    Test that key conversion from camelCase to snake_case works correctly and default values are set if field is missing.
+    Test that key conversion from camelCase to snake_case works correctly
+    and default values are set if field is missing.
     """
     model = dummy_model.parse_model(valid_data)
 
