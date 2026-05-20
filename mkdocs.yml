@@ -1,0 +1,55 @@
+site_name: akcli
+site_description: Command-line interface to make requests to Akamai API.
+site_url: https://jvicg.github.io/akcli
+
+# repo_name: jvicg/akcli
+# repo_url: https://github.com/jvicg/akcli
+
+theme:
+  name: material
+  font:
+    text: Roboto
+    code: JetBrains Mono
+  palette:
+    - scheme: slate
+      # primary: purple
+      # accent: purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      # primary: purple
+      # accent: purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  features:
+    - content.code.copy
+    - navigation.top
+    - navigation.sections
+    - navigation.footer
+
+nav:
+  - Home: index.md
+  - Configuration: configuration.md
+  - Commands:
+    - Dig: commands/dig.md
+    - translate: commands/translate.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.snippets
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.tabbed:
+      alternate_style: true
+  - toc:
+      permalink: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github-alt
+      link: https://github.com/jvicg/akcli
