@@ -12,7 +12,7 @@ import typer
 from rich.console import Console
 from typing_extensions import Annotated
 
-from .__version__ import __epilog__, __version__
+from .__version__ import __title__, __version__
 from .api import AkamaiAPI
 from .cache import Cache
 from .commands import app as commands_app
@@ -23,7 +23,7 @@ _HELP_PANEL_AUTH = "Authentication Options"
 _HELP_PANEL_CACHE = "Cache Options"
 _HELP_PANEL_NETWORK = "Network Options"
 
-app = typer.Typer(rich_markup_mode="rich", no_args_is_help=True, epilog=__epilog__)
+app = typer.Typer(rich_markup_mode="rich", no_args_is_help=True)
 console = Console()
 console_stderr = Console(stderr=True)
 config = Config().main
@@ -45,7 +45,7 @@ def _version_callback(value: Optional[bool], ctx: typer.Context) -> None:
     Callback function to show the program's version and exit.
     """
     if value:
-        console.print(f"{ctx.info_name} {__version__}", highlight=False)
+        console.print(f"{__title__} v{__version__}", highlight=False)
         raise typer.Exit()
 
 
@@ -84,15 +84,11 @@ def main(
     ] = config.cache_ttl,
     use_cache: Annotated[
         bool,
-        typer.Option(
-            help="Use cache to improve performace.", rich_help_panel=_HELP_PANEL_CACHE
-        ),
+        typer.Option(help="Use cache to improve performace.", rich_help_panel=_HELP_PANEL_CACHE),
     ] = config.use_cache,
     proxy: Annotated[
         Optional[str],
-        typer.Option(
-            help="Use a proxy server for requests.", rich_help_panel=_HELP_PANEL_NETWORK
-        ),
+        typer.Option(help="Use a proxy server for requests.", rich_help_panel=_HELP_PANEL_NETWORK),
     ] = config.proxy,
     request_timeout: Annotated[
         int,
@@ -143,8 +139,7 @@ def main(
         verify=validate_certs,
     )
 
-    # Pass initialized instances to subcommands using context object
-    # to avoid intializing them in each subcommand.
+    # Share initialized instances with subcommands via context object
     ctx.obj = _AppContext(api=api, console=console, console_stderr=console_stderr)
 
 
