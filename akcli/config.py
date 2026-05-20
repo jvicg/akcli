@@ -5,8 +5,6 @@ Provides utilities for loading, parsing, and managing the configuration file,
 and defines all the default configuration values used on the CLI.
 """
 
-from __future__ import annotations
-
 import warnings
 from dataclasses import asdict, dataclass, fields
 from functools import cached_property

@@ -4,8 +4,6 @@
 Simple file-based cache implementation to cache HTTP requests.
 """
 
-from __future__ import annotations
-
 import json
 from dataclasses import dataclass, field
 from functools import wraps
