@@ -137,6 +137,7 @@ class AkamaiAPI:
             }
         )
 
+    # NOTE: cached wraps poll_if_needed because we only want to cache the final response
     @cached
     @_poll_if_needed
     def _request(self, method: str, endpoint: str, *args: Any, **kwargs: Any) -> JSONResponse:
