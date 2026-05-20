@@ -194,16 +194,6 @@ class Config:
                     stacklevel=2,
                 )
 
-    def _extract_invalid_key(self, e: TypeError) -> str:
-        """
-        Helper method to extract the invalid key from `TypeError` msg by spliting it by single quote (').
-        Example TypeError msg: "__init__() got an unexpected keyword argument 'foo'"
-        """
-        try:
-            return str(e).split("'")[1]
-        except IndexError:
-            return "<unknown>"
-
     """
     NOTE: These three methods below may add some complexity to the class, but in return provides an automatic and
     extensible mechanism for validating configuration parameters. New commands only need to be declared type-annotated
@@ -225,18 +215,23 @@ class Config:
         Initialize a single command options object ignoring invalid parameters in the config,
         and printing a warning with the invalid params.
         """
-        data_copy = data.copy()  # Don't modify the original dict
-        while True:
-            try:
-                return cls(**data_copy)
-            except TypeError as e:  # noqa: PERF203
-                key = self._extract_invalid_key(e)
-                warnings.warn(
-                    f"Ignoring invalid config option '{highlight(key)}' in '{name}'.",
-                    InvalidOptionWarning,
-                    stacklevel=2,
-                )
-                data_copy.pop(key, None)
+        valid_fields = {f.name for f in fields(cls)}
+        filtered, invalid = {}, []
+
+        for key in data:
+            if key in valid_fields:
+                filtered[key] = data[key]
+            else:
+                invalid.append(key)
+
+        for key in invalid:
+            warnings.warn(
+                f"Ignoring invalid config option '{highlight(key)}' in '{name}'.",
+                InvalidOptionWarning,
+                stacklevel=2,
+            )
+
+        return cls(**filtered)
 
     def _init_options(self) -> None:
         """
@@ -277,8 +272,9 @@ def init_config_file(value: Optional[bool], console: Console, path: Path = _CONF
 
     highlighted_path = highlight(str(path))
 
-    # Initilialize config and build default config dict
     config = Config()
+    # Initialize each `_OptionsBase` class with no arguments to get default values,
+    # ignoring any user-defined config that may already exist.
     default_config = {name: _to_serializable_dict(cls()) for name, cls in config.commands_name_class_map.items()}
 
     # Ask for confirmation in case config file already exists

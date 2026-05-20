@@ -140,9 +140,7 @@ def test_load_config_file_fail_decode(dummy_open):
     """
     Test that expected warning is raised when tomli raises an exception.
     """
-    mock_decode_error = TOMLDecodeError(
-        msg="mock decode error", doc="some invalid toml", pos=0
-    )
+    mock_decode_error = TOMLDecodeError(msg="mock decode error", doc="some invalid toml", pos=0)
     with (
         patch("akcli.config.Path.open", new=dummy_open),
         patch("akcli.config.tomli.load", side_effect=mock_decode_error),
@@ -156,17 +154,6 @@ def test_get_section_returns_empty_for_missing_section(dummy_config):
     Test that _get_section returns an empty dict for a nonexistent section.
     """
     assert dummy_config._get_section("nonexistent") == {}
-
-
-def test_extract_invalid_key(dummy_config):
-    """
-    Test that _extract_invalid_key correctly extracts invalid keys from TypeError messages.
-    """
-    e = TypeError("__init__() got an unexpected keyword argument 'foo'")
-    assert dummy_config._extract_invalid_key(e) == "foo"
-
-    e2 = TypeError("some weird error")
-    assert dummy_config._extract_invalid_key(e2) == "<unknown>"
 
 
 def test_valid_sections_warns_with_invalid_section(dummy_config):
@@ -190,9 +177,7 @@ def test_init_opts_warns_with_invalid_option(dummy_config):
     }
 
     with pytest.warns(InvalidOptionWarning) as record:
-        opts = dummy_config._init_single_command_opts(
-            "main", _MainOptions, dummy_options_data
-        )
+        opts = dummy_config._init_single_command_opts("main", _MainOptions, dummy_options_data)
 
     for key in ["invalid_option", "invalid_option2"]:
         assert any(key in str(warning.message) for warning in record)
