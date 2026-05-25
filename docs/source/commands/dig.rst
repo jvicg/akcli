@@ -94,6 +94,6 @@ Show only the returned values:
 
 Print the raw dig-style response:
 
-.. code-block:: console
+.. code-block:: bash
 
    akcli dig example.com --raw
