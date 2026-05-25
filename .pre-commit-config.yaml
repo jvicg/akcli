@@ -52,5 +52,6 @@ repos:
         name: Run full test suite
         entry: pytest tests/
         language: system
+        pass_filenames: false
         types: [python]
         stages: [pre-push]
