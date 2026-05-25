@@ -1,0 +1,46 @@
+# akcli
+
+[![Pactester latest version](https://img.shields.io/pypi/v/pactester.svg)](https://pypi.org/project/pactester/)
+[![CI tests status](https://github.com/jvicg/pactester/actions/workflows/test.yml/badge.svg)](https://github.com/jvicg/pactester/actions/workflows/tests.yml)
+[![Current available Python versions](https://img.shields.io/pypi/pyversions/pactester.svg)](https://pypi.org/project/pactester/)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
+A modern command-line interface for interacting with Akamai's API.
+
+Built for engineers who work with Akamai on a daily basis, `akcli` removes the friction of
+working with Akamai's API directly. It exposes a set of commands to interact with different
+Akamai API endpoints, providing a fast and intuitive way to work with the platform without
+leaving the terminal.
+
+## Installation
+
+```bash
+pip install akcli
+```
+
+Alternatively, you may download the wheel file from the
+[releases page](https://github.com/jvicg/akcli/releases).
+
+## Requirements
+
+- Python 3.9 or higher
+- A valid Akamai `.edgerc` credentials file
+
+## Documentation
+
+Full documentation is available on [Read the Docs](https://akcli.readthedocs.io).
+
+## Features
+
+- Transparent EdgeGrid authentication — just point `akcli` to your `.edgerc` file and it handles the rest.
+- Response caching to avoid hitting the API unnecessarily, with configurable TTL and cache directory.
+- Proxy support to route requests through an HTTP/HTTPS proxy with a single config option.
+- SSL certificate validation enabled by default, with the option to disable it for internal or development environments.
+- TOML config file to persist your preferred defaults and never repeat the same flags.
+- Visually modern CLI experience built with [Typer](https://typer.tiangolo.com/) and [Rich](https://rich.readthedocs.io/).
+
+## License
+
+This project is licensed under the MIT License.
+You are free to use, modify, and distribute this software under the terms of the license.
+See the [LICENSE](https://github.com/jvicg/akcli/blob/main/LICENSE) file for full details.
