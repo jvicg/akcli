@@ -9,7 +9,6 @@ First off, thank you for considering contributing to our project! Your support a
     - [Reporting Bugs](#reporting-bugs)
     - [Suggesting Enhancements](#suggesting-enhancements)
     - [Submitting Pull Requests](#submitting-pull-requests)
-- [Translations](#translations)
 - [Style Guides](#style-guides)
     - [Coding Standards](#coding-standards)
     - [Pre-commit Hooks](#pre-commit-hooks)
@@ -47,20 +46,6 @@ If you're ready to contribute code:
 5. **Commit Your Changes**: Use descriptive commit messages (see [Commit Messages](#commit-messages)).
 6. **Push to Your Fork**: Use `git push origin feature/YourFeatureName`.
 7. **Open a Pull Request**: Navigate to the original repository and click "New Pull Request." Provide a clear description of your changes.
-
-## Translations
-
-We aim to make this project accessible to a global audience. If you would like to translate this repository into another language, here's how you can help:
-
-1. **Check for Existing Translations**: Review the repository to see if a translation in your language already exists.
-2. **Open an Issue**: If no translation exists, open an issue to propose adding a new language. Please specify which language you plan to work on.
-3. **Create a Translation Folder**:
-    - Create a folder for your language (e.g., `translations/es/` for Spanish) in the repository.
-    - Include translated files, ensuring they match the structure of the original files.
-4. **Submit a Pull Request**: Follow the steps in [Submitting Pull Requests](#submitting-pull-requests) to add your translated content.
-5. **Work with Reviewers**: Collaborate with maintainers and native speakers to ensure accuracy and quality.
-
-If you need any assistance during the translation process, feel free to open an issue or reach out via discussions.
 
 ## Style Guides
 

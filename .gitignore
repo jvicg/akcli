@@ -1,10 +1,13 @@
 .*
 dist/
+build/
 !.github/
 !.vscode/
 *.egg-info/
+docs/build/
 !.gitignore
 *__pycache__*
 !.editorconfig
 !.python-version
+!.readthedocs.yaml
 !.pre-commit-config.yaml
