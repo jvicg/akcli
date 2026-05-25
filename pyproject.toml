@@ -45,6 +45,10 @@ pre-commit = "^4.3"
 pytest = "^8.4"
 pytest-cov = "^7.1"
 
+[tool.poetry.group.docs.dependencies]
+sphinx = "^7.4"
+sphinx-rtd-theme = "^3.0"
+
 [tool.pytest.ini_options]
 minversion = "7.0"
 addopts = "-ra -q --tb=short --cov=akcli --cov-report=term-missing --import-mode importlib"
