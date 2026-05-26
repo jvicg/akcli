@@ -1,4 +1,4 @@
-name: Run Python full test suite
+name: tests
 
 on:
   push:
