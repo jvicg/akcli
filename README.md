@@ -12,7 +12,7 @@ working with Akamai's API directly. It exposes a set of commands to interact wit
 Akamai API endpoints, providing a fast and intuitive way to work with the platform without
 leaving the terminal.
 
-![akcli demo](https://raw.githubusercontent.com/jvicg/akcli/main/docs/source/_static/demo.gif)
+![akcli demo gif](https://raw.githubusercontent.com/jvicg/akcli/main/docs/source/_static/demo.gif)
 
 ## Features
 
