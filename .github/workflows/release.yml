@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   release-build:
-    name: Build and test the package using Poetry
+    name: Build the package
     runs-on: ubuntu-latest
 
     steps:
