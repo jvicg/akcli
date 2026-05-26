@@ -40,6 +40,19 @@ Submitting pull requests
 Style guides
 ------------
 
+Code style
+~~~~~~~~~~
+
+This project follows `PEP 8 <https://peps.python.org/pep-0008/>`_ as the base coding standard,
+enforced automatically by `Ruff <https://docs.astral.sh/ruff/>`_. Ruff runs as a pre-commit hook
+so most style issues are caught before committing.
+
+Type hints are required for all function signatures.
+
+When adding comments, focus on explaining *why* the code does something rather than *what* it
+does. The code itself should be clear enough to convey the what; comments are for capturing
+intent, context, or non-obvious decisions that the code alone cannot express.
+
 Pre-commit hooks
 ~~~~~~~~~~~~~~~~
 
