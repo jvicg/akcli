@@ -29,9 +29,7 @@ def hostname():
 
 
 @pytest.mark.parametrize("query_type", ["A", "AAAA", "CNAME"])
-def test_response_with_valid_query(
-    https_server, edgerc, runner, hostname, cache_dir, query_type
-):
+def test_response_with_valid_query(https_server, edgerc, runner, hostname, cache_dir, query_type):
     """
     Test the `dig` command with valid credentials and different query types.
     """
@@ -92,9 +90,7 @@ def test_response_with_missing_hostname(https_server, edgerc, runner, cache_dir)
     assert "Missing argument 'HOSTNAME'" in result.output
 
 
-def test_response_with_invalid_query_type(
-    https_server, edgerc, runner, hostname, cache_dir
-):
+def test_response_with_invalid_query_type(https_server, edgerc, runner, hostname, cache_dir):
     """
     Test the `dig` command with an invalid query type.
     """
@@ -109,7 +105,7 @@ def test_response_with_invalid_query_type(
         "--query-type",
         "INVALID",
     ]
-    result = runner.invoke(app, cmd)
+    result = runner.invoke(app, cmd, color=False)
 
     assert result.exit_code != 0
     assert "Invalid value for '--query-type'" in result.output
@@ -139,9 +135,7 @@ def test_response_in_json_format(https_server, edgerc, runner, hostname, cache_d
     assert "recordType" in result.output
 
 
-def test_response_with_raw_and_json_flags(
-    https_server, edgerc, runner, hostname, cache_dir
-):
+def test_response_with_raw_and_json_flags(https_server, edgerc, runner, hostname, cache_dir):
     """
     Test that using --raw and --json simultaneously produces an error.
     """

@@ -4,6 +4,7 @@
 Fixtures used in multiple test modules.
 """
 
+import os
 from unittest.mock import mock_open
 
 import pytest
@@ -18,6 +19,10 @@ from tests.fixtures import (
     INVALID_CLIENT_TOKEN,
     run_https_server,
 )
+
+# Disable rich formatting to prevent ANSI escape codes from breaking string assertions
+os.environ["NO_COLOR"] = "1"
+os.environ["TERM"] = "dumb"
 
 # -----------------------
 # General fixtures
@@ -135,9 +140,7 @@ def edgerc(tmp_path, https_server):
 @pytest.fixture
 def edgerc_invalid(tmp_path, https_server):
     """Fixture that provides an invalid edgerc file content."""
-    content = _gen_edgerc_content(
-        https_server, INVALID_ACCESS_TOKEN, INVALID_CLIENT_TOKEN
-    )
+    content = _gen_edgerc_content(https_server, INVALID_ACCESS_TOKEN, INVALID_CLIENT_TOKEN)
     edgerc = tmp_path / ".edgerc"
     edgerc.write_text(content)
 
