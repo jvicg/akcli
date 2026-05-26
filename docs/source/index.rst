@@ -2,14 +2,14 @@ akcli
 =====
 Release |version|.
 
-.. image:: https://img.shields.io/pypi/v/pactester.svg
-   :target: https://pypi.org/project/pactester/
+.. image:: https://img.shields.io/pypi/v/akcli.svg
+   :target: https://pypi.org/project/akcli/
    :alt: Pactester latest version
 .. image:: https://github.com/jvicg/akcli/actions/workflows/tests.yml/badge.svg
    :target: https://github.com/jvicg/akcli/actions/workflows/tests.yml
    :alt: CI tests status
-.. image:: https://img.shields.io/pypi/pyversions/pactester.svg
-   :target: https://pypi.org/project/pactester/
+.. image:: https://img.shields.io/pypi/pyversions/akcli.svg
+   :target: https://pypi.org/project/akcli/
    :alt: Current available Python versions
 .. image:: https://img.shields.io/badge/License-MIT-blue.svg
    :target: https://github.com/jvicg/akcli/blob/main/LICENSE
