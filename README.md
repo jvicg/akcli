@@ -1,9 +1,9 @@
 # akcli
 
 [![Pactester latest version](https://img.shields.io/pypi/v/pactester.svg)](https://pypi.org/project/pactester/)
-[![CI tests status](https://github.com/jvicg/pactester/actions/workflows/test.yml/badge.svg)](https://github.com/jvicg/pactester/actions/workflows/tests.yml)
+[![CI tests status](https://github.com/jvicg/akcli/actions/workflows/tests.yml/badge.svg)](https://github.com/jvicg/akcli/actions/workflows/tests.yml)
 [![Current available Python versions](https://img.shields.io/pypi/pyversions/pactester.svg)](https://pypi.org/project/pactester/)
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](jvicg/akcli/blob/main/LICENSE)
 
 A modern command-line interface for interacting with Akamai's API.
 

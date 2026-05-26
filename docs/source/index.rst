@@ -5,8 +5,8 @@ Release |version|.
 .. image:: https://img.shields.io/pypi/v/pactester.svg
    :target: https://pypi.org/project/pactester/
    :alt: Pactester latest version
-.. image:: https://github.com/jvicg/pactester/actions/workflows/test.yml/badge.svg
-   :target: https://github.com/jvicg/pactester
+.. image:: https://github.com/jvicg/akcli/actions/workflows/tests.yml/badge.svg
+   :target: https://github.com/jvicg/akcli/actions/workflows/tests.yml
    :alt: CI tests status
 .. image:: https://img.shields.io/pypi/pyversions/pactester.svg
    :target: https://pypi.org/project/pactester/
