@@ -14,8 +14,6 @@ leaving the terminal.
 
 ![akcli demo](docs/source/_static/demo.gif)
 
----
-
 ## Features
 
 - Transparent EdgeGrid authentication — just point `akcli` to your `.edgerc` file and it handles the rest.
@@ -24,8 +22,6 @@ leaving the terminal.
 - SSL certificate validation enabled by default, with the option to disable it for internal or development environments.
 - TOML config file to persist your preferred defaults and never repeat the same flags.
 - Visually modern CLI experience built with [Typer](https://typer.tiangolo.com/) and [Rich](https://rich.readthedocs.io/).
-
----
 
 ## Installation
 
@@ -37,8 +33,6 @@ pip install akcli
 
 Alternatively, you may download the wheel file from the
 [releases page](https://github.com/jvicg/akcli/releases).
-
----
 
 ## Quick start
 
@@ -66,13 +60,9 @@ Translate an Akamai error reference:
 akcli translate "11.a1b2c3d4.1234567890.ab12cd3"
 ```
 
----
-
 ## Documentation
 
 Full documentation is available on [Read the Docs](https://akcli.readthedocs.io).
-
----
 
 ## License
 
