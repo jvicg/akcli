@@ -2,7 +2,6 @@
 
 # Generate Pydantic models automatically from JSON files
 # Depends on `datamodel-code-generator` Python package
-# Source: https://github.com/koxudaxi/datamodel-code-generator
 
 set -euo pipefail
 IFS=$'\n\t'
@@ -33,7 +32,7 @@ EOF
 
 _get_file_headers() {
   local additional="$1"
-  # add a newline to additional headers if they exist
+  # Add a newline to additional headers if they exist
   if [[ -n "${additional}" ]]; then
     additional="${additional}"$'\n'
   fi

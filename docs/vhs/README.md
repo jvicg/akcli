@@ -2,11 +2,17 @@
 
 This directory contains [VHS](https://github.com/charmbracelet/vhs) tape scripts used to generate the GIF recordings shown in the documentation.
 
-## Configuration
+### Configuration
 
 Global tapes configuration is controlled on `config.tape`.
 
-## Regenerating GIFs
+### Regenerating GIFs
+
+To generate the full list of GIFs, run:
+
+```bash
+./generate.sh
+```
 
 To regenerate a GIF, run:
 
