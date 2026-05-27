@@ -9,7 +9,7 @@ from configparser import NoSectionError
 from functools import wraps
 from pathlib import Path
 from time import sleep
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 import requests
 from akamai.edgegrid import EdgeGridAuth, EdgeRc
@@ -29,7 +29,7 @@ from .exceptions import (
     ResourceNotFound,
     TooManyRequests,
 )
-from .models import DigResponse, TranslateResponse
+from .models import DigResponse, PurgeResponse, TranslateResponse
 from .typing import Certificate, GenericFunction, Headers, JSONResponse
 from .utils import highlight
 
@@ -244,3 +244,15 @@ class AkamaiAPI:
         data = self._post(endpoint=endpoint, json=payload)
 
         return TranslateResponse.parse_model(data)
+
+    def purge(self, method: str, network: str, type: str, objects: List) -> PurgeResponse:
+        """
+        Purge content given CP code, tag or URL/ARL.
+        Reference: https://techdocs.akamai.com/purge-cache/reference/
+        """
+        endpoint = f"/ccu/v3/{method}/{type}/{network}"
+        payload = {"objects": objects}
+
+        data = self._post(endpoint=endpoint, json=payload)
+
+        return PurgeResponse.parse_model(data)
