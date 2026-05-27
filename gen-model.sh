@@ -12,7 +12,7 @@ ERR_EXIT=1
 PROG_NAME=$(basename "$0")
 MODELS_DIR="${PWD}/akcli/models/"
 OUTPUT_MODEL_TYPE="pydantic_v2.BaseModel"
-BASE_CLASS=".base_response.BaseAPIModel"
+BASE_CLASS="._base.BaseAPIModel"
 PYTHON_VERSION="3.9"
 
 
