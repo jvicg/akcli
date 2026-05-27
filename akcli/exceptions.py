@@ -158,15 +158,22 @@ class InvalidEdgeRcSection(HandledException):
 class InvalidPanelType(HandledException):
     """Raised when an invalid panel type is used."""
 
-    exit_code = 61
+    exit_code = 71
     default_msg = "Invalid panel type specified."
 
 
 class MutuallyExclusiveArgs(HandledException):
     """Raised if mutually exclusive arguments are used together."""
 
-    exit_code = 62
+    exit_code = 72
     default_msg = "Mutually exclusive arguments."
+
+
+class InvalidParams(HandledException):
+    """Raised when invalid parameters are passed to a command."""
+
+    exit_code = 73
+    default_msg = "Invalid parameters."
 
 
 # ----------------------
