@@ -1,0 +1,7 @@
+{
+  "describedBy": "https://techdocs.akamai.com/purge-cache/reference/api-errors",
+  "detail": "Invalid or malformed hostname",
+  "httpStatus": 400,
+  "supportId": "edcp-NZbXzFpHBjcJeryhw6PVgG",
+  "title": "bad URL hostname"
+}

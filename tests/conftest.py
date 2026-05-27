@@ -24,6 +24,7 @@ from tests.fixtures import (
 os.environ["NO_COLOR"] = "1"
 os.environ["TERM"] = "dumb"
 
+
 # -----------------------
 # General fixtures
 # -----------------------
