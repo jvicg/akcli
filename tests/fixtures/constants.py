@@ -11,21 +11,23 @@ from pathlib import Path
 # ----------------------
 
 _ROOT = Path(__file__).parent.resolve() / "data"
+CERT = _ROOT / "server-cert.crt"
+PRIV_KEY = _ROOT / "server-key.key"
+
 EDGERC_TEMPLATE = _ROOT / "edgerc.template"
 DIG_SUCCESS_RESPONSE = _ROOT / "dig_success_response.json"
 DIG_NO_RECORDS_RESPONSE = _ROOT / "dig_no_records_response.json"
+
 TRANSLATE_PENDING_RESPONSE = _ROOT / "translate_pending_response.json"
 TRANSLATE_PENDING_30X_RESPONSE = _ROOT / "translate_pending_30.x_codes_response.json"
-TRANSLATE_PENDING_NON_30X_RESPONSE = (
-    _ROOT / "translate_pending_non_30.x_codes_response.json"
-)
+TRANSLATE_PENDING_NON_30X_RESPONSE = _ROOT / "translate_pending_non_30.x_codes_response.json"
 TRANSLATE_PENDING_NO_LOGS_RESPONSE = _ROOT / "translate_pending_no_logs_response.json"
 TRANSLATE_30X_CODES_RESPONSE = _ROOT / "translate_30.x_codes_response.json"
 TRANSLATE_NON_30X_CODES_RESPONSE = _ROOT / "translate_non_30.x_codes_response.json"
 TRANSLATE_NO_LOGS_RESPONSE = _ROOT / "translate_no_logs_response.json"
-CERT = _ROOT / "server-cert.crt"
-PRIV_KEY = _ROOT / "server-key.key"
 
+PURGE_SUCCESS_RESPONSE = _ROOT / "purge_success_response.json"
+PURGE_BAD_REQUEST_RESPONSE = _ROOT / "purge_bad_request_response.json"
 
 # ----------------------
 # Values
@@ -44,3 +46,6 @@ TRANSLATE_30X_ID = "successful-30x"
 TRANSLATE_NON_30X_ID = "successful-non-30x"
 TRANSLATE_NO_LOGS_ID = "successful-no-logs"
 TRANSLATE_BAD_REQUEST_ID = "bad-request"
+
+PURGE_EXPECTED_PURGE_ID = "edcp-NZbXzFpHBjcJeryhw6PVgG"
+PURGE_BAD_REQUEST_TRIGGER = "bad-request-trigger"

@@ -45,6 +45,10 @@ _DEFAULT_DIG_SHORT_OUTPUT = False
 
 _DEFAULT_TRANSLATE_TRACE = False
 
+_DEFAULT_PURGE_METHOD = "invalidate"
+_DEFAULT_PURGE_NETWORK = "staging"
+_DEFAULT_PURGE_TYPE = "url"
+
 MIN_REQUEST_TIMEOUT = 0
 MAX_REQUEST_TIMEOUT = 120
 
@@ -93,6 +97,9 @@ class _MainOptions(_OptionsBase):
     proxy: Optional[str] = _DEFAULT_PROXY
 
 
+""
+
+
 @dataclass
 class _DigOptions(_OptionsBase):
     """
@@ -111,6 +118,17 @@ class _TranslateOptions(_OptionsBase):
     """
 
     trace: bool = _DEFAULT_TRANSLATE_TRACE
+
+
+@dataclass
+class _PurgeOptions(_OptionsBase):
+    """
+    Dataclass that contains all the options for the `akcli purge` command.
+    """
+
+    method: str = _DEFAULT_PURGE_METHOD
+    network: str = _DEFAULT_PURGE_NETWORK
+    type: str = _DEFAULT_PURGE_TYPE
 
 
 class Config:
@@ -134,6 +152,7 @@ class Config:
     main: _MainOptions
     dig: _DigOptions
     translate: _TranslateOptions
+    purge: _PurgeOptions
 
     def __new__(cls, *args: Any, **kwargs: Any) -> "Config":
         """

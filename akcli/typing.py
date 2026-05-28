@@ -35,7 +35,7 @@ SerializedOptions = _BaseDict
 SerializedConfig = Dict[str, SerializedOptions]
 """Type alias representing the entire configuration file with all the options in serialized format."""
 
-PanelType = Literal["info", "result", "warning", "error"]
+PanelType = Literal["info", "error", "warning", "result", "success"]
 """String literals representing valid panel types for rich panels."""
 
 ColumnHeaders = List[_BaseDict]

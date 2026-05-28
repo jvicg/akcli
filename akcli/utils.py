@@ -46,15 +46,14 @@ def _print_panel(console: Console, msg: str, panel_type: PanelType) -> None:
         "error": ("[red]Error[/red]", "red"),
         "warning": ("[yellow]Warning[/yellow]", "yellow"),
         "result": ("[blue]Result[/blue]", "blue"),
+        "success": ("[green]Success[/green]", "green"),
     }
 
     if panel_type not in styles:
         raise ValueError(f"Invalid panel type: {panel_type}")
 
     title, border_style = styles[panel_type]
-    console.print(
-        Panel.fit(msg, title=title, border_style=border_style, title_align="left")
-    )
+    console.print(Panel.fit(msg, title=title, border_style=border_style, title_align="left"))
 
 
 def print_info(console: Console, msg: str) -> None:
@@ -83,6 +82,13 @@ def print_result(console: Console, msg: str) -> None:
     Print a result in pretty format using rich.Panel.
     """
     _print_panel(console, msg, panel_type="result")
+
+
+def print_success(console: Console, msg: str) -> None:
+    """
+    Print a success in pretty format using rich.Panel.
+    """
+    _print_panel(console, msg, panel_type="success")
 
 
 def print_json(console: Console, data: JSONResponse) -> None:

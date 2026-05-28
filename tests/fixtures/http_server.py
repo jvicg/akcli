@@ -17,7 +17,7 @@ from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from time import sleep
-from typing import Any, Callable, ClassVar, Dict, Generator, Literal, Type
+from typing import Any, Callable, ClassVar, Dict, Generator, Literal, Optional, Type
 from urllib.parse import urlparse
 
 from .constants import (
@@ -29,6 +29,8 @@ from .constants import (
     DIG_TIMEOUT_HOSTNAME,
     DIG_VALID_HOSTNAME,
     PRIV_KEY,
+    PURGE_BAD_REQUEST_TRIGGER,
+    PURGE_SUCCESS_RESPONSE,
     TRANSLATE_30X_CODES_RESPONSE,
     TRANSLATE_30X_ID,
     TRANSLATE_BAD_REQUEST_ID,
@@ -76,13 +78,24 @@ class _HTTPRequestHandler(BaseHTTPRequestHandler):
 
         return wrapper
 
-    def _resolve_handler(self) -> Callable[..., Any]:
+    def _resolve_handler(self) -> Optional[Callable[..., Any]]:
         """
         Resolve the handler function based on the request method and path.
+        Supports exact matches and prefix matches for dynamic endpoints.
         """
         endpoint = urlparse(self.path).path
         method = self.command
-        return self.handlers[method].get(endpoint)  # type: ignore
+
+        # Exact match first
+        if endpoint in self.handlers[method]:
+            return self.handlers[method][endpoint]
+
+        # Prefix match for dynamic endpoints
+        for registered, func in self.handlers[method].items():
+            if endpoint.startswith(registered):
+                return func
+
+        return None
 
     def _do_generic(self) -> Any:
         """
@@ -284,6 +297,23 @@ def get_translate_response_no_logs(handler: _HTTPRequestHandler) -> None:
     Endpoint that simulates fetching when there are no logs available.
     """
     sent_data = _parse_file_into_bytes(TRANSLATE_NO_LOGS_RESPONSE)
+    return handler.send_ok(sent_data)
+
+
+@_HTTPRequestHandler.endpoint("POST", "/ccu/v3")
+def post_purge_invalidate_url(handler: _HTTPRequestHandler) -> None:
+    """
+    Generic endpoint for all the purge calls. This endpoint covers the endpoints:
+        - /ccu/v3/invalidate/url/staging
+        - /ccu/v3/invalidate/url/production
+    and so on.
+    """
+    data = handler.get_post_data()
+
+    if PURGE_BAD_REQUEST_TRIGGER in data.get("objects", []):
+        return handler.send_bad_request()
+
+    sent_data = _parse_file_into_bytes(PURGE_SUCCESS_RESPONSE)
     return handler.send_ok(sent_data)
 
 

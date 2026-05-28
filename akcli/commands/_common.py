@@ -4,8 +4,6 @@
 Common command arguments and options.
 """
 
-from typing import Optional
-
 import typer
 from merge_args import merge_args
 from typing_extensions import Annotated
@@ -24,7 +22,7 @@ def common_args(
     @merge_args(func)
     def wrapper(
         ctx: typer.Context,
-        json: Annotated[Optional[bool], typer.Option("--json", help="Output in JSON format.")] = None,
+        json: Annotated[bool, typer.Option(help="Print output in JSON format.")] = False,
         **kwargs,
     ) -> None:
         return func(ctx=ctx, **kwargs)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Unit tests for the `_build_table_recursive` function in the `translate` subcommand.
+Suite of tests for the `_build_table_recursive` function in the `translate` subcommand.
 
 This function recursively builds a Rich table from a dictionary, creating subtables
 for nested dictionaries. These tests verify the table structure and cell content

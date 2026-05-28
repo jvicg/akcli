@@ -157,9 +157,11 @@ def cached(func: GenericFunction) -> GenericFunction:
         payload = kwargs.get("json")
         cache: Cache = self._cache
         key = cache.generate_key(method, endpoint, payload)
-
         cached = cache.get(key)
-        if cached is not None and cache.use_cache:
+
+        # Handle cases where wrapped function is passing use_cache
+        use_cache = kwargs.pop("use_cache", True) and cache.use_cache
+        if cached is not None and use_cache:
             return cached.data
 
         # If not cached, make request to API and store result

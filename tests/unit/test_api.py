@@ -233,22 +233,16 @@ def test_session_configuration(edgerc_path, section, mock_cache, proxy, verify, 
         )
     ),
 )
-def test_request_call_with_expected_params(
-    base_url, timeout, mock_api, method, endpoint, json, headers
-):
+def test_request_call_with_expected_params(base_url, timeout, mock_api, method, endpoint, json, headers):
     """
     Test that `_request` method calls `Session.request` with expected parameters.
     """
     url = base_url + endpoint
 
     # Call the method avoiding decorators
-    mock_api._request.__wrapped__(
-        mock_api, method, endpoint, json=json, headers=headers
-    )
+    mock_api._request.__wrapped__(mock_api, method, endpoint, json=json, headers=headers)
 
-    mock_api._session.request.assert_called_once_with(
-        method, url, timeout=timeout, json=json, headers=headers
-    )
+    mock_api._session.request.assert_called_once_with(method, url, timeout=timeout, json=json, headers=headers)
 
 
 def test_request_returns_json_on_200(mock_api):
@@ -291,9 +285,7 @@ def _call_request(mock_api, method, endpoint, status_code):
         (429, TooManyRequests),
     ],
 )
-def test_request_raises_exception_on_non_200(
-    mock_api, method, endpoint, status_code, raised_exception
-):
+def test_request_raises_exception_on_non_200(mock_api, method, endpoint, status_code, raised_exception):
     """
     Test that `_request` method raises an exception on non-200 status codes.
     """
@@ -302,9 +294,7 @@ def test_request_raises_exception_on_non_200(
 
 
 @pytest.mark.parametrize("status_code", [499, 502, 503, 504])
-def test_request_raises_exception_on_unhandled_status_code(
-    mock_api, method, endpoint, status_code
-):
+def test_request_raises_exception_on_unhandled_status_code(mock_api, method, endpoint, status_code):
     """
     Test that `_request` method raises `RequestError` on unhandled status codes.
     """
@@ -333,22 +323,23 @@ def test_request_raises_exception_on_timeout_proxy_or_unhandled_error(
 
 
 @pytest.mark.parametrize(
-    "func_name, method, json, headers",
+    "func_name, method, json, headers, use_cache",
     [
-        ("_get", "GET", None, None),
-        ("_delete", "DELETE", None, None),
-        ("_post", "POST", {"key": "value"}, {"some": "header"}),
-        ("_patch", "PATCH", {"key": "value"}, {"other": "header"}),
+        ("_get", "GET", None, None, False),
+        ("_delete", "DELETE", None, None, True),
+        ("_post", "POST", {"key": "value"}, {"some": "header"}, True),
+        ("_patch", "PATCH", {"key": "value"}, {"other": "header"}, False),
     ],
 )
 def test_request_wrappers_call_request_with_expected_params(
-    mock_api, func_name, method, json, headers, endpoint
+    mock_api, func_name, method, json, headers, endpoint, use_cache
 ):
     """
     Test that `_get/_post/_patch/_delete` methods call `_request` with correct params.
     """
     kwargs = {"json": json} if json is not None else {}
     kwargs["headers"] = headers
+    kwargs["use_cache"] = use_cache
 
     with patch.object(mock_api, "_request", return_value={"ok": True}) as mock_request:
         func = getattr(mock_api, func_name)
@@ -365,9 +356,7 @@ def test_poll_if_needed_raises_exception_when_exceed_maximum_retries(method, end
     """
     pending_response = {"executionStatus": "IN_PROGRESS"}
 
-    mock_request = MagicMock(
-        return_value=pending_response
-    )  # Always return pending response
+    mock_request = MagicMock(return_value=pending_response)  # Always return pending response
     decorated_func = _poll_if_needed(mock_request)
 
     with (
@@ -381,9 +370,7 @@ def test_poll_if_needed_raises_exception_when_exceed_maximum_retries(method, end
     assert mock_request.call_count == _MAX_POLLING_ATTEMPTS
 
 
-def test_poll_changes_params_in_subsequent_cycles_and_returns_expected_when_over(
-    endpoint, method_post, payload
-):
+def test_poll_changes_params_in_subsequent_cycles_and_returns_expected_when_over(endpoint, method_post, payload):
     """
     Test that `_poll_if_needed` changes method and endpoint in subsequent polling cycles,
     calls sleep with `retryAfter` value and returns the result when poll is over.
@@ -395,17 +382,13 @@ def test_poll_changes_params_in_subsequent_cycles_and_returns_expected_when_over
     }
     completed_response = {"executionStatus": "COMPLETED", "data": {"result": "ok"}}
 
-    mock_request = MagicMock(
-        side_effect=[pending_response, pending_response, completed_response]
-    )
+    mock_request = MagicMock(side_effect=[pending_response, pending_response, completed_response])
     decorated_func = _poll_if_needed(mock_request)
 
     with patch("akcli.api.sleep") as mock_sleep:
         result = decorated_func(method=method_post, endpoint=endpoint, json=payload)
 
-    mock_sleep.assert_called_with(
-        pending_response.get("retryAfter")
-    )  # Ensure sleep is called with retryAfter value
+    mock_sleep.assert_called_with(pending_response.get("retryAfter"))  # Ensure sleep is called with retryAfter value
 
     assert result == completed_response
     assert mock_request.call_count == 3
@@ -422,9 +405,7 @@ def test_poll_changes_params_in_subsequent_cycles_and_returns_expected_when_over
     }
 
     # Subsequent calls should be identical to the previous polling call
-    assert (
-        mock_request.call_args_list[2].kwargs == mock_request.call_args_list[1].kwargs
-    )
+    assert mock_request.call_args_list[2].kwargs == mock_request.call_args_list[1].kwargs
 
 
 @pytest.mark.parametrize(

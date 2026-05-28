@@ -9,7 +9,7 @@ from configparser import NoSectionError
 from functools import wraps
 from pathlib import Path
 from time import sleep
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 import requests
 from akamai.edgegrid import EdgeGridAuth, EdgeRc
@@ -29,7 +29,7 @@ from .exceptions import (
     ResourceNotFound,
     TooManyRequests,
 )
-from .models import DigResponse, TranslateResponse
+from .models import DigResponse, PurgeResponse, TranslateResponse
 from .typing import Certificate, GenericFunction, Headers, JSONResponse
 from .utils import highlight
 
@@ -193,29 +193,33 @@ class AkamaiAPI:
         except Exception as e:
             raise RequestError(f"An error occurred while making the request: {e}") from e
 
-    def _get(self, endpoint: str, headers: Optional[Headers] = None) -> JSONResponse:
+    def _get(self, endpoint: str, headers: Optional[Headers] = None, use_cache: bool = True) -> JSONResponse:
         """
         Make a GET request.
         """
-        return self._request(method="GET", endpoint=endpoint, headers=headers)
+        return self._request(method="GET", endpoint=endpoint, headers=headers, use_cache=use_cache)
 
-    def _post(self, endpoint: str, json: dict, headers: Optional[Headers] = None) -> JSONResponse:
+    def _post(
+        self, endpoint: str, json: dict, headers: Optional[Headers] = None, use_cache: bool = True
+    ) -> JSONResponse:
         """
         Make a POST request.
         """
-        return self._request(method="POST", endpoint=endpoint, json=json, headers=headers)
+        return self._request(method="POST", endpoint=endpoint, json=json, headers=headers, use_cache=use_cache)
 
-    def _patch(self, endpoint: str, json: dict, headers: Optional[Headers] = None) -> JSONResponse:
+    def _patch(
+        self, endpoint: str, json: dict, headers: Optional[Headers] = None, use_cache: bool = True
+    ) -> JSONResponse:
         """
         Make a PATCH request.
         """
-        return self._request(method="PATCH", endpoint=endpoint, json=json, headers=headers)
+        return self._request(method="PATCH", endpoint=endpoint, json=json, headers=headers, use_cache=use_cache)
 
-    def _delete(self, endpoint: str, headers: Optional[Headers] = None) -> JSONResponse:
+    def _delete(self, endpoint: str, headers: Optional[Headers] = None, use_cache: bool = True) -> JSONResponse:
         """
         Make a DELETE request.
         """
-        return self._request(method="DELETE", endpoint=endpoint, headers=headers)
+        return self._request(method="DELETE", endpoint=endpoint, headers=headers, use_cache=use_cache)
 
     def dig(self, hostname: str, query_type: str) -> DigResponse:
         """
@@ -244,3 +248,16 @@ class AkamaiAPI:
         data = self._post(endpoint=endpoint, json=payload)
 
         return TranslateResponse.parse_model(data)
+
+    def purge(self, method: str, network: str, purge_type: str, objects: List) -> PurgeResponse:
+        """
+        Purge content given CP code, tag or URL/ARL.
+        Reference: https://techdocs.akamai.com/purge-cache/reference/
+        """
+        endpoint = f"/ccu/v3/{method}/{purge_type}/{network}"
+        payload = {"objects": objects}
+
+        # Purge is a write operation — caching would silently skip the actual request
+        data = self._post(endpoint=endpoint, json=payload, use_cache=False)
+
+        return PurgeResponse.parse_model(data)
