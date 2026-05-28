@@ -13,6 +13,7 @@ Each command has its own page with a full reference of flags and examples.
 
    dig
    translate
+   purge
 
 Global configuration
 ~~~~~~~~~~~~~~~~~~~~
