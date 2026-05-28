@@ -48,18 +48,6 @@ Explore the available commands:
 akcli --help
 ```
 
-Resolve a domain using Akamai's Edge servers:
-
-```bash
-akcli dig example.com
-```
-
-Translate an Akamai error reference:
-
-```bash
-akcli translate "11.a1b2c3d4.1234567890.ab12cd3"
-```
-
 ## Documentation
 
 Full documentation is available on [Read the Docs](https://akcli.readthedocs.io).
