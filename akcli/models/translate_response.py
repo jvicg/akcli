@@ -17,7 +17,7 @@ from typing import List, Optional
 
 from pydantic import Field
 
-from ._base import BaseAPIModel, BaseResponse, IpType
+from ._base import BaseAPIModel, BaseEDResponse, IpType
 
 
 class Request(BaseAPIModel):
@@ -88,7 +88,7 @@ class Result(BaseAPIModel):
     no_logs: Optional[str] = Field(alias="noLogsErrorTitle", default=None)
 
 
-class TranslateResponse(BaseResponse):
+class TranslateResponse(BaseEDResponse):
     request: Optional[Request] = None
     request_id: Optional[int] = None
     result: Result = Field(default_factory=Result)

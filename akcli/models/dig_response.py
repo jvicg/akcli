@@ -14,7 +14,7 @@ from typing import List, Optional
 
 from pydantic import Field
 
-from ._base import BaseAPIModel, BaseResponse
+from ._base import BaseAPIModel, BaseEDResponse
 
 
 class BaseSectionItem(BaseAPIModel):
@@ -43,6 +43,6 @@ class Result(BaseAPIModel):
     raw_dig: Optional[str] = Field(alias="result", default=None)
 
 
-class DigResponse(BaseResponse):
+class DigResponse(BaseEDResponse):
     internal_ip: Optional[str] = None
     result: Result

@@ -72,9 +72,9 @@ class IpType(BaseAPIModel):
     location: EdgeIpLocation = Field(default_factory=EdgeIpLocation, alias="ipLocation")
 
 
-class BaseResponse(BaseAPIModel):
+class BaseEDResponse(BaseAPIModel):
     """
-    Base model that contains common fields present in all Akamai's API responses.
+    Base model that contains common fields present in all Akamai's API Edge Diagnostic responses.
     """
 
     completed_time: str
