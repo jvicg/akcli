@@ -38,7 +38,7 @@ CLIENT_TOKEN = "dummy-client-token"
 INVALID_ACCESS_TOKEN = "invalid-access-token"
 INVALID_CLIENT_TOKEN = "invalid-client-token"
 
-DIG_VALID_HOSTNAME = "www.example.com"
+DIG_VALID_HOSTNAME = "example.com"
 DIG_TIMEOUT_HOSTNAME = "force-timeout"
 DIG_NO_RECORDS_HOSTNAME = "invalid-domain.notexists"
 
