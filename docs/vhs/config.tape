@@ -13,7 +13,7 @@ Set MarginFill "#2980b9"  # RTD blue
 
 # Setup alias
 Hide
-Type "alias akcli='poetry run akcli' && clear"
+Type "alias akcli='poetry run akcli --edgerc $AKCLI_TEST_EDGERC --no-validate-certs' && clear"
 Enter
 Show
 
