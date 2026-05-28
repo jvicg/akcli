@@ -20,7 +20,7 @@ Global tapes configuration (theming, padding, font size, etc.) is controlled in 
 
 ---
 
-### Generate GIFS
+### Generating GIFS
 
 To spin up the dummy server and generate the full list of GIFs sequentially, run:
 
@@ -28,4 +28,12 @@ To spin up the dummy server and generate the full list of GIFs sequentially, run
 python generate.py
 ```
 
+#### Filtering Tapes
+
+If you are working on a specific feature and don't want to run all scripts, you can filter them by prefix using the -t or --tape flag:
+
+
+```bash
+python generate.py --tape [TAPE]
+```
 Make sure you have `vhs` installed and located in your PATH.

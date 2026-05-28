@@ -5,6 +5,7 @@ Script to run a dummy HTTPS server that will be use to answer the requests made 
 This allow us to manipulate the answer to obtain the gifs without leaking any sensible data from the real Akamai API.
 """
 
+import argparse
 import contextlib
 import os
 import subprocess
@@ -15,6 +16,20 @@ from pathlib import Path
 sys.path.insert(0, ".")
 
 from tests.fixtures import ACCESS_TOKEN, CLIENT_TOKEN, EDGERC_TEMPLATE, run_https_server
+
+
+def _build_arg_parse() -> argparse.ArgumentParser:
+    """
+    Configure and return the argument parser for the script.
+    """
+    parser = argparse.ArgumentParser(description="Run dummy HTTPS server and execute VHS tape scripts.")
+    parser.add_argument(
+        "-t",
+        "--tape",
+        default="",
+        help="Prefix pattern to filter tape files (e.g., 'purge' matches 'purge*.tape').",
+    )
+    return parser
 
 
 def _gen_edgerc(https_server: str) -> Path:
@@ -41,6 +56,9 @@ def main():
     Run the server and execute all the vhs scripts passing them a dummy `.edgerc` file that
     points to the dummy server by environmental variable.
     """
+    parser = _build_arg_parse()
+    args = parser.parse_args()
+
     with run_https_server() as server:
         script_dir = Path(__file__).parent
 
@@ -54,9 +72,10 @@ def main():
             # Add edgerc path to env var
             env = os.environ.copy()
             env["AKCLI_TEST_EDGERC"] = str(edgerc)
+            glob_pattern = f"{args.tape}*.tape"
 
             with contextlib.suppress(KeyboardInterrupt):
-                for file in script_dir.glob("*.tape"):
+                for file in script_dir.glob(glob_pattern):
                     if file.name == "config.tape":
                         continue
 
