@@ -67,12 +67,6 @@ By default, a success message is shown with the purge ID and the estimated compl
    :alt: Output of `akcli purge https://example.com/image.jpg`
    :class: command-output
 
-With ``--json``, the raw API response is returned:
-
-.. image:: /_static/purge-json.gif
-   :alt: Output of `akcli purge --json https://example.com/image.jpg`
-   :class: command-output
-
 Examples
 --------
 
