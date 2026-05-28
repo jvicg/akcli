@@ -56,12 +56,11 @@ def main():
     Run the server and execute all the vhs scripts passing them a dummy `.edgerc` file that
     points to the dummy server by environmental variable.
     """
+    script_dir = Path(__file__).parent
     parser = _build_arg_parse()
     args = parser.parse_args()
 
     with run_https_server() as server:
-        script_dir = Path(__file__).parent
-
         # Get server socket
         host, port = server.socket.getsockname()
         https_server = f"{host}:{port}"
@@ -82,6 +81,7 @@ def main():
                     cmd = ["vhs", file]
                     subprocess.run(cmd, env=env)
 
+        # Ensure the files are removed in all scenarios
         finally:
             edgerc.unlink()
             edgerc.parent.rmdir()
