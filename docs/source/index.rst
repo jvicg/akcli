@@ -1,6 +1,6 @@
 akcli
 =====
-Release |version|.
+Release |version|
 
 .. image:: https://img.shields.io/pypi/v/akcli.svg
    :target: https://pypi.org/project/akcli/
