@@ -9,10 +9,10 @@ from dataclasses import dataclass, field
 from functools import wraps
 from pathlib import Path
 from time import time
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 from .__version__ import __title__
-from .typing import CacheDB, GenericFunction, JSONResponse, Payload, SerializedCacheItem
+from .typing import CacheDB, GenericFunction, JSONResponse, Payload, QueryParams, SerializedCacheItem
 from .utils import hash_sha256
 
 
@@ -133,15 +133,21 @@ class Cache:
         cache_db.pop(key, None)
         self._save_cache(cache_db)
 
-    def generate_key(self, method: str, endpoint: str, payload: Optional[Payload]) -> str:
+    def generate_key(
+        self, method: str, endpoint: str, payload: Optional[Payload], params: Optional[QueryParams]
+    ) -> str:
         """
         Generate the cache key based on the request method, endpoint and payload.
         """
-        s = (
-            f"{method}-{endpoint}-{json.dumps(payload, default=str, sort_keys=True)}"
-            if payload is not None
-            else f"{method}-{endpoint}"
-        )
+
+        def _json_dumps(d: Optional[Dict]) -> str:
+            """Return sorted string from a dict or empty string if None."""
+            if d is None:
+                return ""
+            return json.dumps(d, default=str, sort_keys=True)
+
+        s = f"{method}-{endpoint}-{_json_dumps(params)}-{_json_dumps(payload)}"
+
         return hash_sha256(s)
 
 
@@ -155,8 +161,9 @@ def cached(func: GenericFunction) -> GenericFunction:
     @wraps(func)
     def wrapper(self, method: str, endpoint: str, *args: Any, **kwargs: Any) -> SerializedCacheItem:
         payload = kwargs.get("json")
+        params = kwargs.get("params")
         cache: Cache = self._cache
-        key = cache.generate_key(method, endpoint, payload)
+        key = cache.generate_key(method, endpoint, payload, params)
         cached = cache.get(key)
 
         # Handle cases where wrapped function is passing use_cache

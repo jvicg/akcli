@@ -35,8 +35,6 @@ def fake_cache(cached_data):
         def __init__(self):
             self.use_cache = True
             self.ttl = 300
-
-            # Properties to make checks
             self.get_called = False
             self.set_called = False
             self.last_item_set = None
@@ -54,8 +52,8 @@ def fake_cache(cached_data):
             self.set_called = True
             self.last_item_set = item
 
-        def generate_key(self, method, endpoint, payload):
-            self.last_key_generated = (method, endpoint, payload)
+        def generate_key(self, method, endpoint, payload, params):
+            self.last_key_generated = (method, endpoint, payload, params)
             return f"{method}-{endpoint}-dummyhash"
 
     return FakeCache()
@@ -148,21 +146,19 @@ def test_cached_make_request_if_item_not_in_cache(
     assert result == not_cached_data
 
 
-def test_cached_generates_correct_key(
-    fake_self, decorated_cached_func, method, endpoint, payload, not_cached_data
-):
+def test_cached_generates_correct_key(fake_self, decorated_cached_func, method, endpoint, payload, not_cached_data):
     """
-    Ensure that the `cached` decorator generates the correct cache key.
+    Ensure that the `cached` decorator generates the correct cache key,
+    including query params alongside the method, endpoint and payload.
     """
     cache = fake_self._cache
     cache.cache_item_in_cache = False
 
-    expected_key_input = (method, endpoint, payload)
-    expected_item = _CacheItem(
-        key=f"{method}-{endpoint}-dummyhash", data=not_cached_data, ttl=cache.ttl
-    )
+    params = {"param": "value"}
+    expected_key_input = (method, endpoint, payload, params)
+    expected_item = _CacheItem(key=f"{method}-{endpoint}-dummyhash", data=not_cached_data, ttl=cache.ttl)
 
-    _ = decorated_cached_func(method, endpoint, json=payload)
+    _ = decorated_cached_func(method, endpoint, json=payload, params=params)
 
     assert cache.last_key_generated == expected_key_input
     assert expected_item.key == cache.last_item_set.key
@@ -171,9 +167,7 @@ def test_cached_generates_correct_key(
     assert isinstance(cache.last_item_set.key, str)
 
 
-def test_cached_returns_dict_type(
-    fake_self, decorated_cached_func, method, endpoint, cached_data, not_cached_data
-):
+def test_cached_returns_dict_type(fake_self, decorated_cached_func, method, endpoint, cached_data, not_cached_data):
     """
     Ensure that the `cached` decorator returns data in dict type no matter if cached or not.
     """
@@ -192,9 +186,7 @@ def test_cached_returns_dict_type(
     assert result == not_cached_data
 
 
-def test_cached_passes_kwargs(
-    fake_self, decorated_cached_func, dummy_func, method, endpoint, payload
-):
+def test_cached_passes_kwargs(fake_self, decorated_cached_func, dummy_func, method, endpoint, payload):
     """
     Ensure the cached decorator forwards kwargs to the wrapped function unchanged.
     """

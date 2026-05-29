@@ -23,6 +23,9 @@ Headers = CaseInsensitiveDict
 Payload = _BaseDict
 """JSON payload for HTTP requests."""
 
+QueryParams = _BaseDict
+"""Dictionary with the query params passed to `Session.request`"""
+
 SerializedCacheItem = _BaseDict
 """Dictionary representing a cached item in serialized JSON format."""
 

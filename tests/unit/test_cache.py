@@ -76,9 +76,7 @@ def test_set_multiple_items(cache_params):
     """
     cache = Cache(**cache_params)
 
-    items = [
-        _CacheItem(key=f"key_{i}", data={"value": i}, ttl=100 + i) for i in range(5)
-    ]
+    items = [_CacheItem(key=f"key_{i}", data={"value": i}, ttl=100 + i) for i in range(5)]
 
     for item in items:
         cache.set(item)
@@ -100,9 +98,7 @@ def test_set_overwrites_existent_items(cache, cache_item, cache_item_key):
 
     cache_item_new_data = {"new": "data"}
     cache_item_new_ttl = 25
-    cache_item_new = _CacheItem(
-        key=cache_item_key, data=cache_item_new_data, ttl=cache_item_new_ttl
-    )
+    cache_item_new = _CacheItem(key=cache_item_key, data=cache_item_new_data, ttl=cache_item_new_ttl)
     cache.set(cache_item_new)
 
     cache_db = cache._load_cache()
@@ -210,12 +206,8 @@ def test_delete_removes_only_passed_key(cache, cache_item_data, ttl):
     """
     cache_item_delete_key = "delete_key"
     cache_item_not_delete_key = "key"
-    cache_item_delete = _CacheItem(
-        key=cache_item_delete_key, data=cache_item_data, ttl=ttl
-    )
-    cache_item_not_delete = _CacheItem(
-        key=cache_item_not_delete_key, data=cache_item_data, ttl=ttl
-    )
+    cache_item_delete = _CacheItem(key=cache_item_delete_key, data=cache_item_data, ttl=ttl)
+    cache_item_not_delete = _CacheItem(key=cache_item_not_delete_key, data=cache_item_data, ttl=ttl)
 
     cache.set(cache_item_delete)
     cache.set(cache_item_not_delete)
@@ -232,8 +224,8 @@ def test_generate_key_uniqueness(cache):
     """
     Ensure that `generate_key` produces unique keys for different inputs.
     """
-    input1 = ("GET", "/api/resource1", None)
-    input2 = ("POST", "/api/resource2", "payload")
+    input1 = ("GET", "/api/resource1", None, "params")
+    input2 = ("POST", "/api/resource2", "payload", None)
 
     key1 = cache.generate_key(*input1)
     key2 = cache.generate_key(*input2)
@@ -242,33 +234,32 @@ def test_generate_key_uniqueness(cache):
 
 
 @pytest.mark.parametrize(
-    "payload2",
+    "payload2, params2",
     [
-        None,
-        {"param": "value1"},
+        (None, None),
+        ({"param": "value1"}, None),
+        (None, {"param": "value1"}),
+        ({"param": "value1"}, {"param": "value1"}),
     ],
 )
-def test_generate_key_with_different_payloads(
-    cache, method, endpoint, payload, payload2
-):
+def test_generate_key_with_different_payloads_and_params(cache, method, endpoint, payload, payload2, params2):
     """
-    Ensure that `generate_key` produces different keys for different payloads.
+    Ensure that `generate_key` produces different keys for different payloads and params.
     """
-    key1 = cache.generate_key(method, endpoint, payload)
-    key2 = cache.generate_key(method, endpoint, payload2)
-
+    key1 = cache.generate_key(method, endpoint, payload, None)
+    key2 = cache.generate_key(method, endpoint, payload2, params2)
     assert key1 != key2
 
 
 def test_generate_key_with_same_payload_in_different_order(cache, method, endpoint):
     """
-    Ensure that `generate_key` produces the same key for payloads with same content
+    Ensure that `generate_key` produces the same key for payloads and params with same content
     but different order.
     """
     payload1 = {"a": 1, "b": 2}
     payload2 = {"b": 2, "a": 1}
-
-    key1 = cache.generate_key(method, endpoint, payload1)
-    key2 = cache.generate_key(method, endpoint, payload2)
-
+    params1 = {"x": 1, "y": 2}
+    params2 = {"y": 2, "x": 1}
+    key1 = cache.generate_key(method, endpoint, payload1, params1)
+    key2 = cache.generate_key(method, endpoint, payload2, params2)
     assert key1 == key2
