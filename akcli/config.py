@@ -111,7 +111,7 @@ class _OptionsBase:
         for key in data:
             if key in valid_fields:
                 current_param_type = valid_fields.get(key, "")
-                # Recursively call the function if param is expected as `_OptionsBase`
+                # Recursively call itself if param is subclass of `_OptionsBase`
                 if isclass(current_param_type) and issubclass(current_param_type, _OptionsBase):
                     filtered[key] = current_param_type.from_config(key, data[key])
 
@@ -263,7 +263,7 @@ class Config:
 
     def _get_section(self, section: str) -> SerializedOptions:
         """
-        Get a specific option from the configuration.
+        Get a specific section from the config file.
         """
         return self._data.get(section, {})
 
@@ -299,7 +299,7 @@ class Config:
             setattr(
                 self,
                 cmd_name,
-                # `_OptionsBase.from_config()` will handle the params validation
+                # `_OptionsBase.from_config()` will handle the options validation
                 cmd_class.from_config(cmd_name, section_data),
             )
 
@@ -307,13 +307,14 @@ class Config:
 def _to_serializable_dict(obj: Union[_OptionsBase, Dict]) -> SerializedOptions:
     """
     Recursively convert an `_OptionsBase` instance or dict into a serializable dict.
-
     Converts `Path` fields to strings, removes `None` values, and recursively
-    processes nested dicts. Required since `tomli_w` only supports primitive types.
+    processes nested dicts.
+
+    Required since `tomli_w` only supports primitive types.
     """
     d = (
         asdict(obj) if isinstance(obj, _OptionsBase) else obj
-    )  # `asdict()` recursively converts nested `_OptionsBase`` to dicts, so inner levels will be always dicts
+    )  # `asdict()` recursively converts nested `_OptionsBase` to dicts, so inner levels will be always dicts
 
     for k, v in d.copy().items():  # Iterate over a copy to allow safe deletion of keys
         # If obj is a dict, recursively call the function to serialize inner elements
