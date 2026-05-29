@@ -6,16 +6,18 @@ and defines all the default configuration values used on the CLI.
 """
 
 import warnings
-from dataclasses import asdict, dataclass, fields
+from dataclasses import asdict, dataclass, field, fields
 from functools import cached_property
+from inspect import isclass
 from pathlib import Path
-from typing import Any, Dict, Iterator, Optional, Tuple, Type, get_type_hints
+from typing import Any, Dict, Iterator, Optional, Tuple, Type, Union, get_type_hints
 
 import tomli
 import tomli_w
 import typer
 from platformdirs import user_cache_dir, user_config_dir
 from rich.console import Console
+from typing_extensions import Self
 
 from .__version__ import __title__
 from .exceptions import (
@@ -49,6 +51,11 @@ _DEFAULT_PURGE_METHOD = "invalidate"
 _DEFAULT_PURGE_NETWORK = "staging"
 _DEFAULT_PURGE_TYPE = "url"
 
+_DEFAULT_NL_LIST_LIST_TYPE = "ip"
+_DEFAULT_NL_LIST_SEARCH = None
+_DEFAULT_NL_LIST_INCLUDE_ELEMENTS = False
+_DEFAULT_NL_LIST_EXTENDED = False
+
 MIN_REQUEST_TIMEOUT = 0
 MAX_REQUEST_TIMEOUT = 120
 
@@ -56,7 +63,7 @@ MAX_REQUEST_TIMEOUT = 120
 @dataclass
 class _OptionsBase:
     """
-    Base dataclass used to build other Options dataclasses.
+    Base dataclass for all CLI command options.
     This class is responsible of parsing the parameters in the config file into the expected types.
     """
 
@@ -64,21 +71,64 @@ class _OptionsBase:
         """
         Make the dataclass iterable to loop over its fields and values.
         """
-        for field in fields(self):
-            yield field.name, getattr(self, field.name)
+        for f in fields(self):
+            yield f.name, getattr(self, f.name)
 
     def __post_init__(self) -> None:
         """
-        Parse paths into `Path` objs and expand the tilde (~) after initialization.
+        Parse field values into their expected types after initialization.
+
+        Nested `_OptionsBase` subclasses are parsed from dicts (as returned by the TOML config file),
+        and `Path` fields are expanded and resolved from strings.
         """
         type_hints = get_type_hints(self.__class__)
         for field_name, field_value in self:
             expected_type = type_hints.get(field_name)
 
+            # Parse dicts into `_OptionsBase`
+            if isclass(expected_type) and issubclass(expected_type, _OptionsBase) and isinstance(field_value, Dict):
+                parsed_value = expected_type(**field_value)
+                setattr(self, field_name, parsed_value)
+
             # Only parse `Path`s, or `str`s that are intended to be `Path`
             if expected_type is Path and isinstance(field_value, (str, Path)):
                 parsed_value = Path(field_value).expanduser().resolve()
                 setattr(self, field_name, parsed_value)
+
+    @classmethod
+    def from_config(cls, cmd_name: str, data: SerializedConfig) -> Self:
+        """
+        Instantiate the class from a config file, filtering out invalid fields.
+
+        Recursively validates nested `_OptionsBase` subclasses, so invalid options
+        at any depth are caught and warned about. Valid fields are passed to the constructor;
+        invalid ones are ignored and an `InvalidOptionWarning` is emitted for each.
+        """
+        type_hints = get_type_hints(cls)
+        valid_fields = {f.name: type_hints.get(f.name) for f in fields(cls)}
+        filtered, invalid = {}, []
+
+        for key in data:
+            if key in valid_fields:
+                current_param_type = valid_fields.get(key, "")
+                # Recursively call the function if param is expected as `_OptionsBase`
+                if isclass(current_param_type) and issubclass(current_param_type, _OptionsBase):
+                    filtered[key] = current_param_type.from_config(key, data[key])
+
+                else:
+                    filtered[key] = data[key]
+
+            else:
+                invalid.append(key)
+
+        for key in invalid:
+            warnings.warn(
+                f"Ignoring invalid config option '{highlight(key)}' in '{cmd_name}'.",
+                InvalidOptionWarning,
+                stacklevel=2,
+            )
+
+        return cls(**filtered)
 
 
 @dataclass
@@ -95,9 +145,6 @@ class _MainOptions(_OptionsBase):
     request_timeout: int = _DEFAULT_REQUEST_TIMEOUT
     validate_certs: bool = _DEFAULT_VALIDATE_CERTS
     proxy: Optional[str] = _DEFAULT_PROXY
-
-
-""
 
 
 @dataclass
@@ -131,6 +178,27 @@ class _PurgeOptions(_OptionsBase):
     type: str = _DEFAULT_PURGE_TYPE
 
 
+@dataclass
+class _NLListOptions(_OptionsBase):
+    """
+    Dataclass that contains all the options for the `akcli nl list` command.
+    """
+
+    list_type: str = _DEFAULT_NL_LIST_LIST_TYPE
+    search: Optional[str] = _DEFAULT_NL_LIST_SEARCH
+    include_elements: bool = _DEFAULT_NL_LIST_INCLUDE_ELEMENTS
+    extended: bool = _DEFAULT_NL_LIST_EXTENDED
+
+
+@dataclass
+class _NLOptions(_OptionsBase):
+    """
+    Dataclass that contains all the options for the `akcli nl` command.
+    """
+
+    list: _NLListOptions = field(default_factory=_NLListOptions)
+
+
 class Config:
     """
     Handle configuration file loading and initialization and exposing all the config options.
@@ -146,13 +214,14 @@ class Config:
     """
     NOTE: Declare commands options at class level allows `dataclasses.get_type_hints()`
     to automatically discover all commands and their type. This helps to validate config file
-    parameters without needing to hardcode the valid sections/options.
+    parameters without needing to hardcode the valid sections.
     """
 
     main: _MainOptions
     dig: _DigOptions
     translate: _TranslateOptions
     purge: _PurgeOptions
+    nl: _NLOptions
 
     def __new__(cls, *args: Any, **kwargs: Any) -> "Config":
         """
@@ -211,12 +280,6 @@ class Config:
                     stacklevel=2,
                 )
 
-    """
-    NOTE: These three methods below may add some complexity to the class, but in return provides an automatic and
-    extensible mechanism for validating configuration parameters. New commands only need to be declared type-annotated
-    attributes at the class level, and they will be discovered and validated without requiring manual updates elsewhere.
-    """
-
     @cached_property
     def commands_name_class_map(self) -> Dict[str, Type[_OptionsBase]]:
         """
@@ -227,29 +290,6 @@ class Config:
         commands_map = {name: typ for name, typ in hints.items() if issubclass(typ, _OptionsBase)}
         return commands_map
 
-    def _init_single_command_opts(self, name: str, cls: Type[_OptionsBase], data: SerializedOptions) -> _OptionsBase:
-        """
-        Initialize a single command options object ignoring invalid parameters in the config,
-        and printing a warning with the invalid params.
-        """
-        valid_fields = {f.name for f in fields(cls)}
-        filtered, invalid = {}, []
-
-        for key in data:
-            if key in valid_fields:
-                filtered[key] = data[key]
-            else:
-                invalid.append(key)
-
-        for key in invalid:
-            warnings.warn(
-                f"Ignoring invalid config option '{highlight(key)}' in '{name}'.",
-                InvalidOptionWarning,
-                stacklevel=2,
-            )
-
-        return cls(**filtered)
-
     def _init_options(self) -> None:
         """
         Initialize all command options from the config file, ignoring invalid parameters.
@@ -259,18 +299,28 @@ class Config:
             setattr(
                 self,
                 cmd_name,
-                self._init_single_command_opts(cmd_name, cmd_class, section_data),
+                # `_OptionsBase.from_config()` will handle the params validation
+                cmd_class.from_config(cmd_name, section_data),
             )
 
 
-def _to_serializable_dict(obj: _OptionsBase) -> SerializedOptions:
+def _to_serializable_dict(obj: Union[_OptionsBase, Dict]) -> SerializedOptions:
     """
-    Helper function to convert dataclass items back to a serializable types.
-    This is needed since `tomli_w` does not support complex types, such as `Path`.
+    Recursively convert an `_OptionsBase` instance or dict into a serializable dict.
+
+    Converts `Path` fields to strings, removes `None` values, and recursively
+    processes nested dicts. Required since `tomli_w` only supports primitive types.
     """
-    d = asdict(obj)
-    for k, v in d.copy().items():  # Iterate over a copy of the dict obj
-        if isinstance(v, Path):
+    d = (
+        asdict(obj) if isinstance(obj, _OptionsBase) else obj
+    )  # `asdict()` recursively converts nested `_OptionsBase`` to dicts, so inner levels will be always dicts
+
+    for k, v in d.copy().items():  # Iterate over a copy to allow safe deletion of keys
+        # If obj is a dict, recursively call the function to serialize inner elements
+        if isinstance(v, dict):
+            d[k] = _to_serializable_dict(v)
+
+        elif isinstance(v, Path):
             d[k] = str(v)
 
         # If the value is None remove it from the dict, since NoneType is not serializable
@@ -306,7 +356,7 @@ def init_config_file(value: Optional[bool], console: Console, path: Path = _CONF
 
         print_info(console, f"Succesfully generated config file at {highlighted_path}")
 
-    # Print a warning if unable to generate the config file
+    # Print a warning if, for any reason, unable to generate the config file
     except Exception:
         warnings.warn(
             f"Unable to generate the configuration file at {highlighted_path}",

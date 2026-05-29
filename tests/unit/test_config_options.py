@@ -9,7 +9,8 @@ from pathlib import Path
 
 import pytest
 
-from akcli.config import _OptionsBase
+from akcli.config import _NLListOptions, _NLOptions, _OptionsBase
+from akcli.exceptions import InvalidOptionWarning
 
 # ----------------------
 # Fixtures
@@ -131,3 +132,57 @@ def test_constructor_override_parses_path():
 
     opts = Opts(path="~/override")  # type: ignore
     assert opts.path == Path("~/override").expanduser().resolve()
+
+
+def test_nested_options_parsed_from_dict(nested_options_classes):
+    """
+    Test that nested _OptionsBase subclasses are parsed from dicts, as returned by the TOML parser.
+    """
+    InnerOptions, OuterOptions = nested_options_classes
+    opts = OuterOptions(inner={"value": "overridden"})  # type: ignore
+    assert isinstance(opts.inner, InnerOptions)
+    assert opts.inner.value == "overridden"
+
+
+def test_nested_options_default_factory(nested_options_classes):
+    """
+    Test that nested _OptionsBase subclasses are initialized with default values
+    when no value is provided.
+    """
+    InnerOptions, OuterOptions = nested_options_classes
+    opts = OuterOptions()
+    assert isinstance(opts.inner, InnerOptions)
+    assert opts.inner.value == "default"
+
+
+def test_nested_options_parsed_from_dict_with_path(nested_options_classes):
+    """
+    Test that nested _OptionsBase subclasses correctly parse Path fields
+    when initialized from a dict.
+    """
+    InnerOptions, OuterOptions = nested_options_classes
+    opts = OuterOptions(inner={"path": "~/overridden"})  # type: ignore
+    assert isinstance(opts.inner, InnerOptions)
+    assert opts.inner.path == Path("~/overridden").expanduser().resolve()
+
+
+def test_from_config_ignores_invalid_and_keeps_valid():
+    """
+    Test that invalid options are ignored while valid ones are correctly set,
+    both at the top level and in nested subclasses.
+    """
+    dummy_options_data = {
+        "invalid_option": "some_value",
+        "invalid_option2": 123,
+        "list": {"invalid_nested_option": "some_value", "extended": True},
+    }
+
+    with pytest.warns(InvalidOptionWarning) as record:
+        opts = _NLOptions.from_config("main", dummy_options_data)  # type: ignore
+
+    for key in ["invalid_option", "invalid_option2", "invalid_nested_option"]:
+        assert any(key in str(warning.message) for warning in record)
+
+    assert opts.list.extended
+    assert isinstance(opts, _NLOptions)
+    assert isinstance(opts.list, _NLListOptions)

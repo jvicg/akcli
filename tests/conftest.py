@@ -5,12 +5,15 @@ Fixtures used in multiple test modules.
 """
 
 import os
+from dataclasses import dataclass, field
+from pathlib import Path
 from unittest.mock import mock_open
 
 import pytest
 from typer.testing import CliRunner
 
 from akcli.cache import _CacheItem
+from akcli.config import _OptionsBase
 from tests.fixtures import (
     ACCESS_TOKEN,
     CLIENT_TOKEN,
@@ -73,6 +76,29 @@ def ttl():
 @pytest.fixture
 def cache_item(cache_item_key, cache_item_data, ttl):
     return _CacheItem(key=cache_item_key, data=cache_item_data, ttl=ttl)
+
+
+# -----------------------
+# Config fixtures
+# -----------------------
+
+
+@pytest.fixture
+def nested_options_classes():
+    """
+    Fixture that provides a pair of nested _OptionsBase subclasses for testing.
+    """
+
+    @dataclass
+    class InnerOptions(_OptionsBase):
+        value: str = "default"
+        path: Path = Path("~/default")
+
+    @dataclass
+    class OuterOptions(_OptionsBase):
+        inner: InnerOptions = field(default_factory=InnerOptions)
+
+    return InnerOptions, OuterOptions
 
 
 # -----------------------

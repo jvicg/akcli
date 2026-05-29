@@ -5,6 +5,7 @@ Suite of tests for `init_config_file` function.
 """
 
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Optional
 from unittest.mock import MagicMock, patch
 
@@ -130,3 +131,28 @@ def test_init_config_file_aborts_if_user_declines(dummy_console, tmp_path):
         init_config_file(True, dummy_console, path=existing_file)
 
     assert existing_file.read_text() == "original content"
+
+
+def test_init_config_file_writes_correct_content_with_nested_options(tmp_path, dummy_console, nested_options_classes):
+    """
+    Test that `init_config_file` correctly serializes nested _OptionsBase instances.
+    """
+    _, OuterOptions = nested_options_classes
+
+    config = Config.__new__(Config)
+    config._initialized = True
+    config._path = tmp_file = tmp_path / "config.toml"
+    config.commands_name_class_map = {"main": OuterOptions}
+    config._instance = config
+
+    with pytest.raises(Exit):
+        init_config_file(True, dummy_console, path=tmp_file)
+
+    with tmp_file.open("rb") as f:
+        content = tomli.load(f)
+
+    assert "main" in content
+    assert "inner" in content["main"]
+    assert content["main"]["inner"]["value"] == "default"
+    assert content["main"]["inner"]["path"] == str(Path("~/default").expanduser().resolve())
+    assert isinstance(content["main"]["inner"]["path"], str)

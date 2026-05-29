@@ -166,25 +166,6 @@ def test_valid_sections_warns_with_invalid_section(dummy_config):
     assert any("invalid_section" in str(warning.message) for warning in record)
 
 
-def test_init_opts_warns_with_invalid_option(dummy_config):
-    """
-    Test that invalid options in the configuration file, raises a warning.
-    """
-    dummy_options_data = {
-        "edgerc_path": "/dummy/path",
-        "invalid_option": "some_value",
-        "invalid_option2": 123,
-    }
-
-    with pytest.warns(InvalidOptionWarning) as record:
-        opts = dummy_config._init_single_command_opts("main", _MainOptions, dummy_options_data)
-
-    for key in ["invalid_option", "invalid_option2"]:
-        assert any(key in str(warning.message) for warning in record)
-
-    assert opts.edgerc_path == Path("/dummy/path")
-
-
 def test_init_options_with_mixed_data(dummy_config):
     """
     Test that both invalid sections and options raise appropriate warnings.
