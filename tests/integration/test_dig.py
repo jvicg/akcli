@@ -6,7 +6,7 @@ Suite of integration tests for the `dig` subcommand.
 
 import pytest
 
-from akcli.exceptions import DigNoAnswerWarning
+from akcli.exceptions import NoRecordsFound
 from akcli.main import app
 from tests.fixtures import (
     DIG_NO_RECORDS_HOSTNAME,
@@ -54,7 +54,7 @@ def test_response_with_valid_query(https_server, edgerc, runner, hostname, cache
 
 def test_response_when_no_records_found(https_server, edgerc, runner, cache_dir):
     """
-    Test the `dig` command raises `DigNoAnswerWarning` when no records are found for the given hostname.
+    Test the `dig` command raises `NoRecordsFound` when no records are found for the given hostname.
     """
     cmd = [
         "--edgerc",
@@ -66,7 +66,7 @@ def test_response_when_no_records_found(https_server, edgerc, runner, cache_dir)
         DIG_NO_RECORDS_HOSTNAME,
     ]
 
-    with pytest.warns(DigNoAnswerWarning):
+    with pytest.warns(NoRecordsFound):
         result = runner.invoke(app, cmd)
 
     assert result.exit_code == 0
