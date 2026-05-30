@@ -11,10 +11,10 @@ import typer
 from typing_extensions import Annotated
 
 from akcli.config import Config
-from akcli.exceptions import DigNoAnswerWarning, MutuallyExclusiveArgs, handle_exceptions
+from akcli.exceptions import MutuallyExclusiveArgs, NoRecordsFound, handle_exceptions
 from akcli.utils import create_table, highlight, print_json
 
-from ._common import common_args
+from ._common import common_args, handle_get_field
 
 _COMMAND_NAME = "dig"
 
@@ -76,10 +76,12 @@ def dig(
         raise MutuallyExclusiveArgs("'--raw' and '--json' are mutually exclusive.")
 
     response = api.dig(hostname, query_type)
+    handle_get_field(console, ctx, response)
+
     answer_section = response.result.answer_section
 
     if not answer_section:
-        warnings.warn(f"No register matches the query: {highlight(hostname)}", DigNoAnswerWarning, stacklevel=2)
+        warnings.warn(f"No register matches the query: {highlight(hostname)}", NoRecordsFound, stacklevel=2)
         raise typer.Exit()
 
     if raw:

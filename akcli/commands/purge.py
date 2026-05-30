@@ -15,7 +15,7 @@ from akcli.config import Config
 from akcli.exceptions import InvalidParams, MutuallyExclusiveArgs, handle_exceptions
 from akcli.utils import print_json, print_success
 
-from ._common import common_args
+from ._common import common_args, handle_get_field
 
 _COMMAND_NAME = "purge"
 
@@ -101,6 +101,7 @@ def purge(
         _validate_urls(objects)  # type: ignore
 
     response = api.purge(method, network, purge_type, objects)
+    handle_get_field(console, ctx, response)
 
     if ctx.params.get("json"):
         print_json(console, response.model_dump(by_alias=True))

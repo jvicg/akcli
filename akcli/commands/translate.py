@@ -21,7 +21,7 @@ from akcli.utils import (
     snakecase_to_title,
 )
 
-from ._common import common_args
+from ._common import common_args, handle_get_field
 
 _COMMAND_NAME = "translate"
 
@@ -88,6 +88,8 @@ def translate(
     console = ctx.obj.console
 
     response = api.translate(id, trace)
+    handle_get_field(console, ctx, response)
+
     result = response.result
 
     if result.no_logs:
