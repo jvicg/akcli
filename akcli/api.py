@@ -14,8 +14,6 @@ from typing import Any, List, Optional
 import requests
 from akamai.edgegrid import EdgeGridAuth, EdgeRc
 
-from akcli.models.nl_response import NLResponse
-
 from .__version__ import __title__, __version__
 from .cache import Cache, cached
 from .exceptions import (
@@ -31,7 +29,7 @@ from .exceptions import (
     ResourceNotFound,
     TooManyRequests,
 )
-from .models import DigResponse, PurgeResponse, TranslateResponse
+from .models import DigResponse, NetworkList, NLListResponse, PurgeResponse, TranslateResponse
 from .typing import Certificate, GenericFunction, Headers, JSONResponse
 from .utils import highlight
 
@@ -260,7 +258,7 @@ class AkamaiAPI:
 
         return PurgeResponse.parse_model(data)
 
-    def nl_list(self, list_type: str, search: str, include_elements: bool, extended: bool) -> NLResponse:
+    def nl_list(self, list_type: str, search: str, include_elements: bool, extended: bool) -> NLListResponse:
         """
         List all the Network Lists availables for authenticated user.
         - Reference: https://techdocs.akamai.com/network-lists/reference/get-network-lists
@@ -270,4 +268,16 @@ class AkamaiAPI:
 
         data = self._get(endpoint=endpoint, params=params)
 
-        return NLResponse.parse_model(data)
+        return NLListResponse.parse_model(data)
+
+    def nl_get(self, id: str, include_elements: bool, extended: bool) -> NetworkList:
+        """
+        Retrieve the information of a unique Network List given the NL ID.
+        Reference: https://techdocs.akamai.com/network-lists/reference/get-network-list
+        """
+        endpoint = f"/network-list/v2/network-lists/{id}"
+        params = {"includeElements": include_elements, "extended": extended}
+
+        data = self._get(endpoint=endpoint, params=params)
+
+        return NetworkList.parse_model(data)

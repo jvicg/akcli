@@ -213,8 +213,8 @@ class UnableToGenerateConfigWarning(_BaseWarning):
     pass
 
 
-class DigNoAnswerWarning(_BaseWarning):
-    """Warning raised when dig command returns no answer."""
+class NoRecordsFound(_BaseWarning):
+    """Warning raised when an API call returns no answer."""
 
     pass
 
@@ -257,7 +257,7 @@ def handle_exceptions(
                 print_error(_console, "Operation cancelled by user.")
                 raise typer.Exit(ERR_KEYBOARD_INTERRUPT) from e
 
-            except typer.Exit:
+            except (typer.Exit, typer.Abort):
                 raise
 
             except Exception as e:
