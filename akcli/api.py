@@ -14,6 +14,8 @@ from typing import Any, List, Optional
 import requests
 from akamai.edgegrid import EdgeGridAuth, EdgeRc
 
+from akcli.models.nl_response import NLResponse
+
 from .__version__ import __title__, __version__
 from .cache import Cache, cached
 from .exceptions import (
@@ -193,38 +195,34 @@ class AkamaiAPI:
         except Exception as e:
             raise RequestError(f"An error occurred while making the request: {e}") from e
 
-    def _get(self, endpoint: str, headers: Optional[Headers] = None, use_cache: bool = True) -> JSONResponse:
+    def _get(self, endpoint: str, use_cache: bool = True, **kwargs) -> JSONResponse:
         """
         Make a GET request.
         """
-        return self._request(method="GET", endpoint=endpoint, headers=headers, use_cache=use_cache)
+        return self._request(method="GET", endpoint=endpoint, use_cache=use_cache, **kwargs)
 
-    def _post(
-        self, endpoint: str, json: dict, headers: Optional[Headers] = None, use_cache: bool = True
-    ) -> JSONResponse:
+    def _post(self, endpoint: str, use_cache: bool = True, **kwargs) -> JSONResponse:
         """
         Make a POST request.
         """
-        return self._request(method="POST", endpoint=endpoint, json=json, headers=headers, use_cache=use_cache)
+        return self._request(method="POST", endpoint=endpoint, use_cache=use_cache, **kwargs)
 
-    def _patch(
-        self, endpoint: str, json: dict, headers: Optional[Headers] = None, use_cache: bool = True
-    ) -> JSONResponse:
+    def _patch(self, endpoint: str, use_cache: bool = True, **kwargs) -> JSONResponse:
         """
         Make a PATCH request.
         """
-        return self._request(method="PATCH", endpoint=endpoint, json=json, headers=headers, use_cache=use_cache)
+        return self._request(method="PATCH", endpoint=endpoint, use_cache=use_cache, **kwargs)
 
-    def _delete(self, endpoint: str, headers: Optional[Headers] = None, use_cache: bool = True) -> JSONResponse:
+    def _delete(self, endpoint: str, use_cache: bool = True, **kwargs) -> JSONResponse:
         """
         Make a DELETE request.
         """
-        return self._request(method="DELETE", endpoint=endpoint, headers=headers, use_cache=use_cache)
+        return self._request(method="DELETE", endpoint=endpoint, use_cache=use_cache, **kwargs)
 
     def dig(self, hostname: str, query_type: str) -> DigResponse:
         """
         Uses `dig` command using an Akamai Edge server.
-        Reference: https://techdocs.akamai.com/edge-diagnostics/reference/post-dig
+        - Reference: https://techdocs.akamai.com/edge-diagnostics/reference/post-dig
         """
         endpoint = "/edge-diagnostics/v1/dig"
         payload = {
@@ -240,7 +238,7 @@ class AkamaiAPI:
     def translate(self, id: str, trace: bool) -> TranslateResponse:
         """
         Translate an Akamai Error String.
-        Reference: https://techdocs.akamai.com/edge-diagnostics/reference/post-error-translator
+        - Reference: https://techdocs.akamai.com/edge-diagnostics/reference/post-error-translator
         """
         endpoint = "/edge-diagnostics/v1/error-translator"
         payload = {"errorCode": id, "traceForwardLogs": trace}
@@ -252,7 +250,7 @@ class AkamaiAPI:
     def purge(self, method: str, network: str, purge_type: str, objects: List) -> PurgeResponse:
         """
         Purge content given CP code, tag or URL/ARL.
-        Reference: https://techdocs.akamai.com/purge-cache/reference/
+        - Reference: https://techdocs.akamai.com/purge-cache/reference/
         """
         endpoint = f"/ccu/v3/{method}/{purge_type}/{network}"
         payload = {"objects": objects}
@@ -261,3 +259,15 @@ class AkamaiAPI:
         data = self._post(endpoint=endpoint, json=payload, use_cache=False)
 
         return PurgeResponse.parse_model(data)
+
+    def nl_list(self, list_type: str, search: str, include_elements: bool, extended: bool) -> NLResponse:
+        """
+        List all the Network Lists availables for authenticated user.
+        - Reference: https://techdocs.akamai.com/network-lists/reference/get-network-lists
+        """
+        endpoint = "/network-list/v2/network-lists"
+        params = {"listType": list_type, "search": search, "includeElements": include_elements, "extended": extended}
+
+        data = self._get(endpoint=endpoint, params=params)
+
+        return NLResponse.parse_model(data)
