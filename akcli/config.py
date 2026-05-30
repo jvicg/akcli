@@ -54,7 +54,10 @@ _DEFAULT_PURGE_TYPE = "url"
 _DEFAULT_NL_LIST_LIST_TYPE = "ip"
 _DEFAULT_NL_LIST_SEARCH = None
 _DEFAULT_NL_LIST_INCLUDE_ELEMENTS = False
-_DEFAULT_NL_LIST_EXTENDED = False
+_DEFAULT_NL_LIST_EXTENDED = True
+
+_DEFAULT_NL_GET_INCLUDE_ELEMENTS = False
+_DEFAULT_NL_GET_EXTENDED = True
 
 MIN_REQUEST_TIMEOUT = 0
 MAX_REQUEST_TIMEOUT = 120
@@ -85,15 +88,15 @@ class _OptionsBase:
         for field_name, field_value in self:
             expected_type = type_hints.get(field_name)
 
-            # Parse dicts into `_OptionsBase`
-            if isclass(expected_type) and issubclass(expected_type, _OptionsBase) and isinstance(field_value, Dict):
+            if isclass(expected_type) and issubclass(expected_type, _OptionsBase) and isinstance(field_value, dict):
                 parsed_value = expected_type(**field_value)
-                setattr(self, field_name, parsed_value)
-
-            # Only parse `Path`s, or `str`s that are intended to be `Path`
-            if expected_type is Path and isinstance(field_value, (str, Path)):
+            elif expected_type is Path and isinstance(field_value, (str, Path)):
                 parsed_value = Path(field_value).expanduser().resolve()
-                setattr(self, field_name, parsed_value)
+            # Go to next iteration if nothing to be parsed
+            else:
+                continue
+
+            setattr(self, field_name, parsed_value)
 
     @classmethod
     def from_config(cls, cmd_name: str, data: SerializedConfig) -> Self:
@@ -191,12 +194,23 @@ class _NLListOptions(_OptionsBase):
 
 
 @dataclass
+class _NLGetOptions(_OptionsBase):
+    """
+    Dataclass that contains all the options for the `akcli nl list` command.
+    """
+
+    include_elements: bool = _DEFAULT_NL_GET_INCLUDE_ELEMENTS
+    extended: bool = _DEFAULT_NL_GET_EXTENDED
+
+
+@dataclass
 class _NLOptions(_OptionsBase):
     """
     Dataclass that contains all the options for the `akcli nl` command.
     """
 
     list: _NLListOptions = field(default_factory=_NLListOptions)
+    get: _NLGetOptions = field(default_factory=_NLGetOptions)
 
 
 class Config:

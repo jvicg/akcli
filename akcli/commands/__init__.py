@@ -7,11 +7,13 @@ CLI subcommands.
 import typer
 
 from .dig import app as dig_app
+from .nl import app as nl_app
 from .purge import app as purge_app
 from .translate import app as translate_app
 
 app = typer.Typer()
 
 app.add_typer(dig_app)
+app.add_typer(nl_app)
 app.add_typer(translate_app)
 app.add_typer(purge_app)
